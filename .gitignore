@@ -51,3 +51,11 @@ Temporary Items
 *.filters
 *.users
 *.user
+*.tlog
+*.res
+*.manifest
+*.cache
+*.lastbuildstate
+*.obj
+*.idb
+*.pdb
