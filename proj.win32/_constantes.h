@@ -21,13 +21,13 @@
 #define IDX_COLOR_ROJO		12
 #define IDX_COLOR_VERDE		13
 #define IDX_COLOR_AZUL		14
-#define IDX_BOXMARK			40
+#define IDX_TABLEROMARK		40
 //---------------------------------------------------------------------------------------------------------------------------
 #define TABLERO_LX			7
-#define TABLERO_LY			7
+#define TABLERO_LY			10
 #define TABLERO_LEN			TABLERO_LX*TABLERO_LY
 //---------------------------------------------------------------------------------------------------------------------------
-#define Z_ORDER_BOXMARK		40
+#define Z_ORDER_TABLEROMARK	40
 #define Z_ORDER_FORMA		50
 #define Z_ORDER_NUMERO		60
 //---------------------------------------------------------------------------------------------------------------------------

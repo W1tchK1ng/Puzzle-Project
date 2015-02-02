@@ -36,6 +36,7 @@ bool SceneGame::init()
 	// Accelerometer & Touch
 	setAccelerometerEnabled(false);
 	initTouches();
+
 	// Calcula valores del centro y desplazamiento general
 	CCSize	size		= CCDirector::sharedDirector()->getVisibleSize();
 	CCPoint origin		= CCDirector::sharedDirector()->getVisibleOrigin();
@@ -61,16 +62,14 @@ bool SceneGame::init()
 	pTex[IDX_FORMA_BOX]				= CCTextureCache::sharedTextureCache()->addImage( "box.png" );
 	pTex[IDX_FORMA_CIRCLE]			= CCTextureCache::sharedTextureCache()->addImage( "circle.png" );
 	pTex[IDX_FORMA_STAR]			= CCTextureCache::sharedTextureCache()->addImage( "star.png" );
-	pTex[IDX_BOXMARK]				= CCTextureCache::sharedTextureCache()->addImage( "boxmark.png" );
+	pTex[IDX_TABLEROMARK]			= CCTextureCache::sharedTextureCache()->addImage( "boxmark.png" );
 
 	// inicializa los sprites
-	for(o=0;o<TABLERO_LEN;o++)
-	{
-		pSprNumero[o]	= NULL;
-		pSprForma[o]	= NULL;
-		pSprMark[o]		= NULL;
-		ficha[o].estado	= false;
-	}
+	initTablero();
+	createTablero();
+	createTableroSpr();
+	resetTableroMark();
+
 
 	// Create a "close" menu item with close icon, it's an auto release object.
 	CCMenuItemImage *pCloseItem		= CCMenuItemImage::create( "CloseNormal.png","CloseSelected.png", this, menu_selector(SceneGame::menuCloseCallback)); 
@@ -86,7 +85,7 @@ bool SceneGame::init()
 //---------------------------------------------------------------------------------------------------------------------------
 // create tablero fichas
 //---------------------------------------------------------------------------------------------------------------------------
-void SceneGame::createTableroFichas()
+void SceneGame::createTablero()
 {
 	int o;
 	for(o=0;o<TABLERO_LEN;o++)
@@ -169,13 +168,13 @@ void SceneGame::createTableroSpr()
 	// create marks
 	for(o=0;o<TABLERO_LEN;o++)
 	{
-		if(pSprMark[o] == NULL)
+		if(pSprTableroMark[o] == NULL)
 		{
-			pSprMark[o]		= new CCSprite;
-			pSprMark[o]->initWithTexture( pTex[IDX_BOXMARK] );
-			pSprMark[o]->setPosition(ccp(0,0));
-			pSprMark[o]->setVisible(false);
-			addChild( pSprMark[o] , Z_ORDER_BOXMARK );
+			pSprTableroMark[o]		= new CCSprite;
+			pSprTableroMark[o]->initWithTexture( pTex[IDX_TABLEROMARK] );
+			pSprTableroMark[o]->setPosition(ccp(0,0));
+			pSprTableroMark[o]->setVisible(false);
+			addChild( pSprTableroMark[o] , Z_ORDER_TABLEROMARK );
 		}
 	}
 }
@@ -192,7 +191,7 @@ void SceneGame::menuCloseCallback(CCObject* pSender)
 void SceneGame::menuNewMapCallback(CCObject* pSender)
 {
 	// Fichas en tablero
-	createTableroFichas();
+	createTablero();
 	// Sprites de fichas
 	createTableroSpr();
 }
@@ -245,7 +244,7 @@ void SceneGame::ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent)
 			flagTouchMoved	= false;
 			CCLog("ccTouchesBegan : touchId=%i x=%.1f y=%.1f",touchId,touchPos0.x,touchPos0.y);
 			// boxmarks
-			resetBoxMarks();
+			resetTableroMark();
 		}
 	}
 }
@@ -280,20 +279,14 @@ void SceneGame::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent)
 			flagTouchMoved	= true;
 			flagTouchCalc	= false;
 
-			// calcula en que ficha del tablero termino el touch
+			// marca ficha con touch
 			for(xx=0;xx<TABLERO_LX;xx++)
 			for(yy=0;yy<TABLERO_LY;yy++)
 			{
-				// index
-				idx		= xx + (yy * TABLERO_LX);
+				idx		= getTableroOfs(xx,yy);
 				if(pSprForma[idx] != NULL)
 				if(pSprForma[idx]->boundingBox().containsPoint( p ) )
-				{
-					// boxmark
-					setBoxMark( pSprForma[idx]->getPositionX() , pSprForma[idx]->getPositionY() );
-					fichaBoxMark[ idx ] = true;
-					break;
-				}
+					setTableroMark( xx , yy );
 			}
 		}
 	}
@@ -336,23 +329,17 @@ void SceneGame::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent)
 			flagTouchMoved	= true;
 			flagTouchCalc	= false;
 			touchId			= OFF;
-			// calcula en que ficha del tablero termino el touch
+
+			// marca ficha con touch
 			for(xx=0;xx<TABLERO_LX;xx++)
 			for(yy=0;yy<TABLERO_LY;yy++)
 			{
-				// index
-				idx		= xx + (yy * TABLERO_LX);
+				idx		= getTableroOfs(xx,yy);
 				if(pSprForma[idx] != NULL)
 				if(pSprForma[idx]->boundingBox().containsPoint( p ) )
-				{
-					// boxmark
-					setBoxMark( pSprForma[idx]->getPositionX() , pSprForma[idx]->getPositionY() );
-					fichaBoxMark[ idx ] = true;
-					break;
-				}
+					setTableroMark( xx , yy );
 			}
 		}
-
 	}
 }
 //-------------------------------------------------------------------------------------------------------------------------
@@ -363,37 +350,70 @@ void SceneGame::update(float dt)
 	
 }
 //-------------------------------------------------------------------------------------------------------------------------
+// init tablero
+//-------------------------------------------------------------------------------------------------------------------------
+void SceneGame::initTablero()
+{
+	int o;
+	for(o=0;o<TABLERO_LEN;o++)
+	{
+		pSprNumero[o]			= NULL;
+		pSprForma[o]			= NULL;
+		pSprTableroMark[o]		= NULL;
+		ficha[o].estado			= false;
+		tableroMark[o]			= false;
+	}
+}//-------------------------------------------------------------------------------------------------------------------------
 // reset box marks
 //-------------------------------------------------------------------------------------------------------------------------
-void SceneGame::resetBoxMarks()
+void SceneGame::resetTableroMark()
 {
 	int idx;
 
 	for(idx=0;idx<TABLERO_LEN;idx++)
 	{
 		// marca de ficha elegida
-		fichaBoxMark[idx]	= false;
+		tableroMark[idx]	= false;
 		// sprite asociado
-		pSprMark[idx]->setVisible(false);
-		pSprMark[idx]->setPosition(ccp(0,0));
+		pSprTableroMark[idx]->setVisible(false);
+		pSprTableroMark[idx]->setPosition(ccp(0,0));
 	}
 }
 //-------------------------------------------------------------------------------------------------------------------------
 // reset box marks
 //-------------------------------------------------------------------------------------------------------------------------
-void SceneGame::setBoxMark(float xx,float yy)
+void SceneGame::setTableroMark(int xx,int yy)
 {
 	int idx;
-	for(idx=0;idx<TABLERO_LEN;idx++)
-	{
-		if( pSprMark[idx]->isVisible() == false)
-		{
-			// marca de ficha elegida
-			fichaBoxMark[idx]	= true;
-			// sprite asociado
-			pSprMark[idx]->setPosition( ccp(xx,yy) );
-			pSprMark[idx]->setVisible(true);
-			return;
-		}
-	}
+
+	idx	= getTableroOfs(xx,yy);
+
+	if(tableroMark[idx] == true)
+		return;
+
+	pSprTableroMark[idx]->setVisible(true);
+	pSprTableroMark[idx]->setPosition(ccp(128+xx*128,128+yy*128));
+	tableroMark[idx]	= true;
+	CCLog("BoxMark[%i]",idx);
+}
+//-------------------------------------------------------------------------------------------------------------------------
+// get tablero ofs
+//-------------------------------------------------------------------------------------------------------------------------
+int SceneGame::getTableroOfs(int xx,int yy)
+{
+	return xx + (yy * TABLERO_LX);
+}
+//-------------------------------------------------------------------------------------------------------------------------
+// get tablero x
+//-------------------------------------------------------------------------------------------------------------------------
+int SceneGame::getTableroX(int ofs)
+{
+	return (ofs % TABLERO_LX);
+}
+//-------------------------------------------------------------------------------------------------------------------------
+// get tablero y
+//-------------------------------------------------------------------------------------------------------------------------
+int SceneGame::getTableroY(int ofs)
+{
+	return (ofs / TABLERO_LX);
 }

@@ -22,23 +22,27 @@ public:
 	float						_LX,_LY;
 	float						_OX,_OY;
 
-	//-Fichas----------------------------------------------//
-	FICHA			ficha[MAX_FICHA];
-	int				fichaBoxMark[MAX_FICHA];
-
-	//-BoxMark---------------------------------------------//
-	CCSprite*		pSprMark[TABLERO_LEN];
-	void			resetBoxMarks();
-	void			setBoxMark(float x,float y);
-
-	//-Sprites---------------------------------------------//
+	//-Textures--------------------------------------------//
 	CCTexture2D*	pTex[MAX_TEXTURE];
+
+	//-Tablero---------------------------------------------//
+	int				getTableroOfs(int x,int y);
+	int				getTableroX(int len);
+	int				getTableroY(int len);
+	void			initTablero();
+	void			createTablero();
+	void			createTableroSpr();
+	FICHA			ficha[TABLERO_LEN];
 	CCSprite*		pSprNumero[TABLERO_LEN];
 	CCSprite*		pSprForma[TABLERO_LEN];
 
+	//-BoxMark---------------------------------------------//
+	int				tableroMark[TABLERO_LEN];
+	CCSprite*		pSprTableroMark[TABLERO_LEN];
+	void			resetTableroMark();
+	void			setTableroMark(int x,int y);
+
 	//-Game-----------------------------------------------//
-	void			createTableroFichas();
-	void			createTableroSpr();
 	void			update(float dt);
 	
 	//-Tools-----------------------------------------------//
