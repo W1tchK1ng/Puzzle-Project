@@ -104,8 +104,6 @@ void SceneGame::createTablero()
 			azar( IDX_FORMA_BOX,IDX_FORMA_SPIRAL+1)  , 
 			azar( IDX_COLOR_ROJO,IDX_COLOR_NEGRO+1)
 			);
-		// ficha ofs en tablero
-		ficha[o].ofs	= o;
 	}
 }
 //---------------------------------------------------------------------------------------------------------------------------
@@ -154,13 +152,13 @@ void SceneGame::createFichaSpr(int idx)
 	yy	= getTableroY( idx );
 	if(pSprForma[idx] != NULL)
 	{
-		pSprForma[idx]->setPosition(ccp(128+xx*128,128+yy*128));
+		pSprForma[idx]->setPosition(ccp(128+(xx*128),128+(yy*128)));
 		pSprForma[idx]->setVisible(true);
 		addChild( pSprForma[idx] , Z_ORDER_FORMA );
 	}
 	if(pSprNumero[idx] != NULL)
 	{
-		pSprNumero[idx]->setPosition(ccp(128+xx*128,128+yy*128));
+		pSprNumero[idx]->setPosition(ccp(128+(xx*128),128+(yy*128)));
 		pSprNumero[idx]->setVisible(true);
 		addChild( pSprNumero[idx] , Z_ORDER_NUMERO );
 	}
@@ -495,16 +493,18 @@ void SceneGame::checkMarked()
 	}
 
 	// check suma
-	if(sumaAct == sumaRes)
+	//if(sumaAct == sumaRes)
 	{
 		CCLog("Bingo!");
 		for(xx=0;xx<TABLERO_LX;xx++)
 		for(yy=0;yy<TABLERO_LY;yy++)
 		{
+			// offset de la ficha
 			ofs		= getTableroOfs(xx,yy);
 			// rompe ficha
 			if(ficha[ofs].flagMark == true)
-				ficha[ofs].flagBreak = true;
+			if(ficha[ofs].flagActive == true)
+				romperFicha( ofs );
 		}
 		// reset marks
 		resetTableroMark();
@@ -520,27 +520,46 @@ void SceneGame::copiarFicha(int ofs0,int ofs1)
 	memcpy( &f0 , &ficha[ofs0] , sizeof(FICHA) );
 	memcpy( &f1 , &ficha[ofs1] , sizeof(FICHA) );
 	// libera sprites asociados , para luego crearlos de nuevo
-	if(pSprForma[ofs0] != NULL)
-	{
-		pSprForma[ofs0]->release();
-		pSprForma[ofs0]	= NULL;
-	}
-	if(pSprForma[ofs1] != NULL)
-	{
-		pSprForma[ofs1]->release();
-		pSprForma[ofs1]	= NULL;
-	}
+
+	removeChild( pSprForma[ofs0] , true );
+	pSprForma[ofs0]->release();
+	pSprForma[ofs0]	= NULL;
+	removeChild( pSprForma[ofs1] , true );
+	pSprForma[ofs1]->release();
+	pSprForma[ofs1]	= NULL;
+	removeChild( pSprNumero[ofs0] , true );
+	pSprNumero[ofs0]->release();
+	pSprNumero[ofs0]	= NULL;
+	removeChild( pSprNumero[ofs1] , true );
+	pSprNumero[ofs1]->release();
+	pSprNumero[ofs1]	= NULL;
 	// copia ficha data
 	memcpy( &ficha[ofs1] , &f0 , sizeof(FICHA) );
 	memcpy( &ficha[ofs0] , &f1 , sizeof(FICHA) );
 	// crea sprites
 	createFichaSpr( ofs0 );
 	createFichaSpr( ofs1 );
-	// desactiva el destino
-	ficha[ofs0].flagActive	= false;
-
 
 	CCLog("Copiar Ficha %i a %i",ofs0,ofs1);
+}
+//-------------------------------------------------------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------------------------------------------------------
+void SceneGame::desactivarFicha(int ofs)
+{
+	pSprNumero[ofs]->setVisible(false);
+	pSprForma[ofs]->setVisible(false);
+	ficha[ofs].flagActive	= false;
+}
+//-------------------------------------------------------------------------------------------------------------------------
+// romper ficha
+//-------------------------------------------------------------------------------------------------------------------------
+void SceneGame::romperFicha(int ofs)
+{
+	pSprNumero[ofs]->setVisible(false);
+	pSprForma[ofs]->setVisible(false);
+	ficha[ofs].flagBreak	= true;
+	ficha[ofs].flagActive	= false;
 }
 //-------------------------------------------------------------------------------------------------------------------------
 // update
@@ -561,30 +580,40 @@ void SceneGame::update(float dt)
 			// si es fila de bien arriba , solo la rompe
 			if(yy == (TABLERO_LY-1)) 
 			{
-				ficha[ofs].flagActive	= false;
+				// desactiva la ficha rota
+				desactivarFicha( ofs );
+				//
 				ficha[ofs].flagBreak	= false;
+				/*
+				ficha[ofs].flagActive	= false;
 				pSprNumero[ofs]->setVisible(false);
 				pSprForma[ofs]->setVisible(false);
+				*/
 			}
+			// si hay una ficha arriba
 			else
 			{
-				// si hay una ficha arriba
+				// offset de la ficha de arriba
 				ofs2	= getTableroOfs(xx,yy+1);
-				// si la ficha de arriba esta ok , la hace caer
-				if(ficha[ofs2].flagActive == true)
+				// si no es vacio la mueve hacia abajo
+				if(ficha[ofs2].flagBreak == false)
 				{
-					// la ficha de arriba cae , y la de abajo copia sus datos
-					memcpy( &ficha[ofs] , &ficha[ofs2] , sizeof(FICHA) );
-					ficha[ofs].flagActive	= true;
-					ficha[ofs].flagBreak	= false;
-					pSprNumero[ofs2]->setPosition(ccp(128+(128*xx),128+(128*yy)));
-					pSprForma[ofs2]->setPosition(ccp(128+(128*xx),128+(128*yy)));
-					// la ficha de arriba se rompe
-					pSprNumero[ofs2]->setVisible(false);
-					pSprForma[ofs2]->setVisible(false);
-					ficha[ofs2].flagActive	= false;
+					// copia ficha de arriba con la de abajo
+					copiarFicha( ofs , ofs2 );
+					// 
+					ficha[ofs2].flagBreak	= false;
+					// desactiva la ficha rota
+					desactivarFicha( ofs2 );
+					// la marca como que cae
 					ficha[ofs2].flagBreak	= true;
+
 				}
+				else
+				{
+					// desactiva la ficha rota
+					desactivarFicha( ofs2 );
+				}
+
 			}
 		}
 	}

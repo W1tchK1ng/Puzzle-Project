@@ -35,6 +35,8 @@ public:
 
 	void			createTableroSpr();
 	
+	void			romperFicha(int ofs);
+	void			desactivarFicha(int ofs);
 	void			copiarFicha(int ofs0,int ofsD);
 
 	bool			flagAcomodarTablero;
