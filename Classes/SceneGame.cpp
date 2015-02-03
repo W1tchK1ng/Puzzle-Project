@@ -62,14 +62,19 @@ bool SceneGame::init()
 	pTex[IDX_FORMA_BOX]				= CCTextureCache::sharedTextureCache()->addImage( "box.png" );
 	pTex[IDX_FORMA_CIRCLE]			= CCTextureCache::sharedTextureCache()->addImage( "circle.png" );
 	pTex[IDX_FORMA_STAR]			= CCTextureCache::sharedTextureCache()->addImage( "star.png" );
+	pTex[IDX_FORMA_DONUT]			= CCTextureCache::sharedTextureCache()->addImage( "donut.png" );
+	pTex[IDX_FORMA_HEXAGON]			= CCTextureCache::sharedTextureCache()->addImage( "hexagon.png" );
+	pTex[IDX_FORMA_SPIRAL]			= CCTextureCache::sharedTextureCache()->addImage( "spiral.png" );
 	pTex[IDX_TABLEROMARK]			= CCTextureCache::sharedTextureCache()->addImage( "boxmark.png" );
+
+	pTex[IDX_BG_001]				= CCTextureCache::sharedTextureCache()->addImage( "bg001.png" );
+	pTex[IDX_BG_GAME]				= CCTextureCache::sharedTextureCache()->addImage( "gamebg.png" );
 
 	// inicializa los sprites
 	initTablero();
 	createTablero();
 	createTableroSpr();
 	resetTableroMark();
-
 
 	// Create a "close" menu item with close icon, it's an auto release object.
 	CCMenuItemImage *pCloseItem		= CCMenuItemImage::create( "CloseNormal.png","CloseSelected.png", this, menu_selector(SceneGame::menuCloseCallback)); 
@@ -79,6 +84,9 @@ bool SceneGame::init()
 	CCMenu* pMenu = CCMenu::create(pCloseItem,pNewMapItem,NULL);
 	pMenu->setPosition(CCPointZero);
 	addChild(pMenu, 1);
+
+	// Update
+	schedule( schedule_selector( SceneGame::update ) , GAME_REFRESH );
 
 	return true;
 }
@@ -90,11 +98,71 @@ void SceneGame::createTablero()
 	int o;
 	for(o=0;o<TABLERO_LEN;o++)
 	{
+		// datos basicos de la ficha
 		ficha[o].set( 
 			azar( IDX_NUMERO_1 , IDX_NUMERO_9+1 ) , 
-			azar( IDX_FORMA_BOX,IDX_FORMA_STAR+1)  , 
-			azar( IDX_COLOR_ROJO,IDX_COLOR_AZUL+1) , 
-			0 , 0 , true );
+			azar( IDX_FORMA_BOX,IDX_FORMA_SPIRAL+1)  , 
+			azar( IDX_COLOR_ROJO,IDX_COLOR_NEGRO+1)
+			);
+		// ficha ofs en tablero
+		ficha[o].ofs	= o;
+	}
+}
+//---------------------------------------------------------------------------------------------------------------------------
+//
+//---------------------------------------------------------------------------------------------------------------------------
+void SceneGame::createFichaSpr(int idx)
+{
+	int xx,yy;
+
+	// filtros
+	if(idx < 0)					{ CCLog("ERROR : SceneGame::createFichaSpr(%i) ofs menor que cero"); return; }
+	if(idx >= TABLERO_LEN)		{ CCLog("ERROR : SceneGame::createFichaSpr(%i) ofs mayor que TABLERO_LEN"); return; }
+	if(pSprNumero[idx] != NULL) { CCLog("ERROR : SceneGame::createFichaSpr(%i) pSprNumero no null"); return; }
+	if(pSprForma[idx] != NULL)	{ CCLog("ERROR : SceneGame::createFichaSpr(%i) pSprForma no null"); return; }
+	// alloc
+	pSprNumero[idx]		= new CCSprite;
+	pSprForma[idx]		= new CCSprite;
+	// spr numero
+	if(ficha[idx].numero == IDX_NUMERO_1)			pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_1 ] );
+	else if(ficha[idx].numero == IDX_NUMERO_2)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_2 ] );
+	else if(ficha[idx].numero == IDX_NUMERO_3)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_3 ] );
+	else if(ficha[idx].numero == IDX_NUMERO_4)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_4 ] );
+	else if(ficha[idx].numero == IDX_NUMERO_5)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_5 ] );
+	else if(ficha[idx].numero == IDX_NUMERO_6)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_6 ] );
+	else if(ficha[idx].numero == IDX_NUMERO_7)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_7 ] );
+	else if(ficha[idx].numero == IDX_NUMERO_8)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_8 ] );
+	else if(ficha[idx].numero == IDX_NUMERO_9)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_9 ] );
+	// spr forma
+	if(ficha[idx].forma == IDX_FORMA_STAR)			pSprForma[idx]->initWithTexture( pTex[IDX_FORMA_STAR ] );
+	else if(ficha[idx].forma == IDX_FORMA_CIRCLE)	pSprForma[idx]->initWithTexture( pTex[IDX_FORMA_CIRCLE ] );
+	else if(ficha[idx].forma == IDX_FORMA_BOX)		pSprForma[idx]->initWithTexture( pTex[IDX_FORMA_BOX ] );
+	else if(ficha[idx].forma == IDX_FORMA_DONUT)	pSprForma[idx]->initWithTexture( pTex[IDX_FORMA_DONUT ] );
+	else if(ficha[idx].forma == IDX_FORMA_HEXAGON)	pSprForma[idx]->initWithTexture( pTex[IDX_FORMA_HEXAGON ] );
+	else if(ficha[idx].forma == IDX_FORMA_SPIRAL)	pSprForma[idx]->initWithTexture( pTex[IDX_FORMA_SPIRAL ] );
+	// color
+	if(ficha[idx].color == IDX_COLOR_ROJO)			pSprForma[idx]->setColor( ccc3(255,50,50) );
+	else if(ficha[idx].color == IDX_COLOR_VERDE)	pSprForma[idx]->setColor( ccc3(50,255,50) );
+	else if(ficha[idx].color == IDX_COLOR_AZUL)		pSprForma[idx]->setColor( ccc3(50,50,255) );
+	else if(ficha[idx].color == IDX_COLOR_AMARILLO)	pSprForma[idx]->setColor( ccc3(255,255,50) );
+	else if(ficha[idx].color == IDX_COLOR_MAGENTA)	pSprForma[idx]->setColor( ccc3(255,50,255) );
+	else if(ficha[idx].color == IDX_COLOR_CYAN)		pSprForma[idx]->setColor( ccc3(50,255,255) );
+	else if(ficha[idx].color == IDX_COLOR_BLANCO)	pSprForma[idx]->setColor( ccc3(255,255,255) );
+	else if(ficha[idx].color == IDX_COLOR_NEGRO)	pSprForma[idx]->setColor( ccc3(90,90,90) );
+	// sprite
+	xx	= getTableroX( idx );
+	yy	= getTableroY( idx );
+	if(pSprForma[idx] != NULL)
+	{
+		pSprForma[idx]->setPosition(ccp(128+xx*128,128+yy*128));
+		pSprForma[idx]->setVisible(true);
+		addChild( pSprForma[idx] , Z_ORDER_FORMA );
+	}
+	if(pSprNumero[idx] != NULL)
+	{
+		pSprNumero[idx]->setPosition(ccp(128+xx*128,128+yy*128));
+		pSprNumero[idx]->setVisible(true);
+		addChild( pSprNumero[idx] , Z_ORDER_NUMERO );
 	}
 }
 //---------------------------------------------------------------------------------------------------------------------------
@@ -121,49 +189,32 @@ void SceneGame::createTableroSpr()
 			pSprForma[o]	= NULL;
 		}
 	}
+	// bg
+	if(pSprBg == NULL)
+	{
+		pSprBg	= new CCSprite;
+		pSprBg->initWithTexture( pTex[IDX_BG_001] );
+		pSprBg->setAnchorPoint(ccp(0.0f,0.0f));
+		pSprBg->setVisible(true);
+		pSprBg->setPosition(ccp(128-64,128-64));
+		addChild(pSprBg,Z_ORDER_BG);
+	}
+	if(pSprBgGame == NULL)
+	{
+		pSprBgGame	= new CCSprite;
+		pSprBgGame->initWithTexture( pTex[IDX_BG_GAME] );
+		pSprBgGame->setVisible(true);
+		pSprBgGame->setPosition(ccp(_HLX,_HLY));
+		addChild(pSprBgGame,Z_ORDER_BG_GAME);
+	}
+
 	// create
 	for(xx=0;xx<TABLERO_LX;xx++)
 	for(yy=0;yy<TABLERO_LY;yy++)
 	{
 		// index
 		idx		= xx + (yy * TABLERO_LX);
-		// alloc
-		pSprNumero[idx]		= new CCSprite;
-		pSprForma[idx]		= new CCSprite;
-		// spr numero
-		if(ficha[idx].numero == IDX_NUMERO_1)			pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_1 ] );
-		else if(ficha[idx].numero == IDX_NUMERO_2)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_2 ] );
-		else if(ficha[idx].numero == IDX_NUMERO_3)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_3 ] );
-		else if(ficha[idx].numero == IDX_NUMERO_4)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_4 ] );
-		else if(ficha[idx].numero == IDX_NUMERO_5)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_5 ] );
-		else if(ficha[idx].numero == IDX_NUMERO_6)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_6 ] );
-		else if(ficha[idx].numero == IDX_NUMERO_7)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_7 ] );
-		else if(ficha[idx].numero == IDX_NUMERO_8)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_8 ] );
-		else if(ficha[idx].numero == IDX_NUMERO_9)		pSprNumero[idx]->initWithTexture( pTex[IDX_NUMERO_9 ] );
-		// spr forma
-		if(ficha[idx].forma == IDX_FORMA_STAR)			pSprForma[idx]->initWithTexture( pTex[IDX_FORMA_STAR ] );
-		else if(ficha[idx].forma == IDX_FORMA_CIRCLE)	pSprForma[idx]->initWithTexture( pTex[IDX_FORMA_CIRCLE ] );
-		else if(ficha[idx].forma == IDX_FORMA_BOX)		pSprForma[idx]->initWithTexture( pTex[IDX_FORMA_BOX ] );
-		// color
-		if(ficha[idx].color == IDX_COLOR_ROJO)			pSprForma[idx]->setColor( ccc3(255,0,0) );
-		else if(ficha[idx].color == IDX_COLOR_VERDE)	pSprForma[idx]->setColor( ccc3(0,255,0) );
-		else if(ficha[idx].color == IDX_COLOR_AZUL)		pSprForma[idx]->setColor( ccc3(0,0,255) );
-		// position
-		ficha[idx].x			= xx;
-		ficha[idx].y			= yy;
-		// sprite
-		if(pSprForma[idx] != NULL)
-		{
-			pSprForma[idx]->setPosition(ccp(128+xx*128,128+yy*128));
-			pSprForma[idx]->setVisible(true);
-			addChild( pSprForma[idx] , Z_ORDER_FORMA );
-		}
-		if(pSprNumero[idx] != NULL)
-		{
-			pSprNumero[idx]->setPosition(ccp(128+xx*128,128+yy*128));
-			pSprNumero[idx]->setVisible(true);
-			addChild( pSprNumero[idx] , Z_ORDER_NUMERO );
-		}
+		createFichaSpr( idx );
 	}
 	// create marks
 	for(o=0;o<TABLERO_LEN;o++)
@@ -339,15 +390,11 @@ void SceneGame::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent)
 				if(pSprForma[idx]->boundingBox().containsPoint( p ) )
 					setTableroMark( xx , yy );
 			}
+
+			// check marked
+			checkMarked();
 		}
 	}
-}
-//-------------------------------------------------------------------------------------------------------------------------
-// update
-//-------------------------------------------------------------------------------------------------------------------------
-void SceneGame::update(float dt)
-{
-	
 }
 //-------------------------------------------------------------------------------------------------------------------------
 // init tablero
@@ -355,15 +402,20 @@ void SceneGame::update(float dt)
 void SceneGame::initTablero()
 {
 	int o;
+	// Tablero
 	for(o=0;o<TABLERO_LEN;o++)
 	{
 		pSprNumero[o]			= NULL;
 		pSprForma[o]			= NULL;
 		pSprTableroMark[o]		= NULL;
-		ficha[o].estado			= false;
-		tableroMark[o]			= false;
 	}
-}//-------------------------------------------------------------------------------------------------------------------------
+	// Bg
+	pSprBgGame				= NULL;
+	pSprBg					= NULL;
+	//flags
+	flagAcomodarTablero		= false;
+}
+//-------------------------------------------------------------------------------------------------------------------------
 // reset box marks
 //-------------------------------------------------------------------------------------------------------------------------
 void SceneGame::resetTableroMark()
@@ -373,7 +425,7 @@ void SceneGame::resetTableroMark()
 	for(idx=0;idx<TABLERO_LEN;idx++)
 	{
 		// marca de ficha elegida
-		tableroMark[idx]	= false;
+		ficha[idx].flagMark		= false;
 		// sprite asociado
 		pSprTableroMark[idx]->setVisible(false);
 		pSprTableroMark[idx]->setPosition(ccp(0,0));
@@ -388,12 +440,12 @@ void SceneGame::setTableroMark(int xx,int yy)
 
 	idx	= getTableroOfs(xx,yy);
 
-	if(tableroMark[idx] == true)
+	if(ficha[idx].flagMark == true)
 		return;
 
 	pSprTableroMark[idx]->setVisible(true);
 	pSprTableroMark[idx]->setPosition(ccp(128+xx*128,128+yy*128));
-	tableroMark[idx]	= true;
+	ficha[idx].flagMark		= true;
 	CCLog("BoxMark[%i]",idx);
 }
 //-------------------------------------------------------------------------------------------------------------------------
@@ -416,4 +468,124 @@ int SceneGame::getTableroX(int ofs)
 int SceneGame::getTableroY(int ofs)
 {
 	return (ofs / TABLERO_LX);
+}
+//-------------------------------------------------------------------------------------------------------------------------
+// check Marked
+//-------------------------------------------------------------------------------------------------------------------------
+void SceneGame::checkMarked()
+{
+	int xx,yy,ofs;
+	int	sumaRes,sumaAct;
+
+	// suma resultado 10 , suma actual 0
+	sumaRes	= 10;
+	sumaAct	= 0;
+
+	// create
+	for(xx=0;xx<TABLERO_LX;xx++)
+	for(yy=0;yy<TABLERO_LY;yy++)
+	{
+		// offset
+		ofs		= getTableroOfs(xx,yy);
+		// check suma
+		if(ficha[ofs].flagMark == true)
+		{
+			sumaAct	+= (ficha[ofs].numero+1);
+		}
+	}
+
+	// check suma
+	if(sumaAct == sumaRes)
+	{
+		CCLog("Bingo!");
+		for(xx=0;xx<TABLERO_LX;xx++)
+		for(yy=0;yy<TABLERO_LY;yy++)
+		{
+			ofs		= getTableroOfs(xx,yy);
+			// rompe ficha
+			if(ficha[ofs].flagMark == true)
+				ficha[ofs].flagBreak = true;
+		}
+		// reset marks
+		resetTableroMark();
+	}
+}
+//-------------------------------------------------------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------------------------------------------------------
+void SceneGame::copiarFicha(int ofs0,int ofs1)
+{
+	FICHA f0,f1;
+	// guarda valores
+	memcpy( &f0 , &ficha[ofs0] , sizeof(FICHA) );
+	memcpy( &f1 , &ficha[ofs1] , sizeof(FICHA) );
+	// libera sprites asociados , para luego crearlos de nuevo
+	if(pSprForma[ofs0] != NULL)
+	{
+		pSprForma[ofs0]->release();
+		pSprForma[ofs0]	= NULL;
+	}
+	if(pSprForma[ofs1] != NULL)
+	{
+		pSprForma[ofs1]->release();
+		pSprForma[ofs1]	= NULL;
+	}
+	// copia ficha data
+	memcpy( &ficha[ofs1] , &f0 , sizeof(FICHA) );
+	memcpy( &ficha[ofs0] , &f1 , sizeof(FICHA) );
+	// crea sprites
+	createFichaSpr( ofs0 );
+	createFichaSpr( ofs1 );
+	// desactiva el destino
+	ficha[ofs0].flagActive	= false;
+
+
+	CCLog("Copiar Ficha %i a %i",ofs0,ofs1);
+}
+//-------------------------------------------------------------------------------------------------------------------------
+// update
+//-------------------------------------------------------------------------------------------------------------------------
+void SceneGame::update(float dt)
+{
+	int		xx,yy,ofs,ofs2;
+	FICHA	tmpFicha;
+
+	for(xx=0;xx<TABLERO_LX;xx++)
+	for(yy=0;yy<TABLERO_LY;yy++)
+	{
+		ofs		= getTableroOfs(xx,yy);
+
+		// Hay ficha rota ?
+		if(ficha[ofs].flagBreak == true)
+		{
+			// si es fila de bien arriba , solo la rompe
+			if(yy == (TABLERO_LY-1)) 
+			{
+				ficha[ofs].flagActive	= false;
+				ficha[ofs].flagBreak	= false;
+				pSprNumero[ofs]->setVisible(false);
+				pSprForma[ofs]->setVisible(false);
+			}
+			else
+			{
+				// si hay una ficha arriba
+				ofs2	= getTableroOfs(xx,yy+1);
+				// si la ficha de arriba esta ok , la hace caer
+				if(ficha[ofs2].flagActive == true)
+				{
+					// la ficha de arriba cae , y la de abajo copia sus datos
+					memcpy( &ficha[ofs] , &ficha[ofs2] , sizeof(FICHA) );
+					ficha[ofs].flagActive	= true;
+					ficha[ofs].flagBreak	= false;
+					pSprNumero[ofs2]->setPosition(ccp(128+(128*xx),128+(128*yy)));
+					pSprForma[ofs2]->setPosition(ccp(128+(128*xx),128+(128*yy)));
+					// la ficha de arriba se rompe
+					pSprNumero[ofs2]->setVisible(false);
+					pSprForma[ofs2]->setVisible(false);
+					ficha[ofs2].flagActive	= false;
+					ficha[ofs2].flagBreak	= true;
+				}
+			}
+		}
+	}
 }

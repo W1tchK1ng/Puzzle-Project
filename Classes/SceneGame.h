@@ -31,20 +31,32 @@ public:
 	int				getTableroY(int len);
 	void			initTablero();
 	void			createTablero();
+	void			createFichaSpr(int ofs);
+
 	void			createTableroSpr();
+	
+	void			copiarFicha(int ofs0,int ofsD);
+
+	bool			flagAcomodarTablero;
+
 	FICHA			ficha[TABLERO_LEN];
 	CCSprite*		pSprNumero[TABLERO_LEN];
 	CCSprite*		pSprForma[TABLERO_LEN];
+	CCSprite*		pSprBg;
+	CCSprite*		pSprBgGame;
 
-	//-BoxMark---------------------------------------------//
-	int				tableroMark[TABLERO_LEN];
+	//-Mark------------------------------------------------//
+	//int				tableroMark[TABLERO_LEN];
+	//int				tableroBreak[TABLERO_LEN];
 	CCSprite*		pSprTableroMark[TABLERO_LEN];
 	void			resetTableroMark();
 	void			setTableroMark(int x,int y);
 
 	//-Game-----------------------------------------------//
 	void			update(float dt);
-	
+	void			checkMarked();
+	void			tableroLock();
+	void			tableroUnlock();
 	//-Tools-----------------------------------------------//
 	int				azar( int low , int high );
 

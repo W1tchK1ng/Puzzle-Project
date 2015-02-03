@@ -9,12 +9,14 @@ class FICHA
 public:
 				FICHA();
 				~FICHA();
-	void		set(int n,int f,int c,int x,int y,int e);
+	void		set(int n,int f,int c);
+	void		clear();
 	int			numero;
 	int			forma;
 	int			color;
-	int			x,y;
-	int			estado;
+	bool		flagBreak;
+	bool		flagMark;
+	bool		flagActive;
 };
 //---------------------------------------------------------------------------------------------------------------------------
 #endif
