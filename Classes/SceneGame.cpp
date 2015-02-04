@@ -75,6 +75,8 @@ bool SceneGame::init()
 	createTablero();
 	createTableroSpr();
 	resetTableroMark();
+	// 
+	initFxExplo();
 
 	// Create a "close" menu item with close icon, it's an auto release object.
 	CCMenuItemImage *pCloseItem		= CCMenuItemImage::create( "CloseNormal.png","CloseSelected.png", this, menu_selector(SceneGame::menuCloseCallback)); 
@@ -493,7 +495,7 @@ void SceneGame::checkMarked()
 	}
 
 	// check suma
-	//if(sumaAct == sumaRes)
+	if(sumaAct == sumaRes)
 	{
 		CCLog("Bingo!");
 		for(xx=0;xx<TABLERO_LX;xx++)
@@ -504,7 +506,12 @@ void SceneGame::checkMarked()
 			// rompe ficha
 			if(ficha[ofs].flagMark == true)
 			if(ficha[ofs].flagActive == true)
+			{
 				romperFicha( ofs );
+				// fx explo
+				fxExplo( pSprForma[ofs]->getPositionX()    , pSprForma[ofs]->getPositionY() );
+			}
+
 		}
 		// reset marks
 		resetTableroMark();
@@ -520,7 +527,6 @@ void SceneGame::copiarFicha(int ofs0,int ofs1)
 	memcpy( &f0 , &ficha[ofs0] , sizeof(FICHA) );
 	memcpy( &f1 , &ficha[ofs1] , sizeof(FICHA) );
 	// libera sprites asociados , para luego crearlos de nuevo
-
 	removeChild( pSprForma[ofs0] , true );
 	pSprForma[ofs0]->release();
 	pSprForma[ofs0]	= NULL;
@@ -539,16 +545,57 @@ void SceneGame::copiarFicha(int ofs0,int ofs1)
 	// crea sprites
 	createFichaSpr( ofs0 );
 	createFichaSpr( ofs1 );
-
+	// Log
 	CCLog("Copiar Ficha %i a %i",ofs0,ofs1);
+}
+//-------------------------------------------------------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------------------------------------------------------
+void SceneGame::moverFicha(int ofs0,int ofs1)
+{
+	FICHA f0,f1;
+	// guarda valores
+	memcpy( &f0 , &ficha[ofs0] , sizeof(FICHA) );
+	memcpy( &f1 , &ficha[ofs1] , sizeof(FICHA) );
+	// libera sprites asociados , para luego crearlos de nuevo
+	if(pSprForma[ofs0] != NULL)
+	{
+		removeChild( pSprForma[ofs0] , true );
+		pSprForma[ofs0]->release();
+		pSprForma[ofs0]	= NULL;
+	}
+	if(pSprForma[ofs1] != NULL)
+	{
+		removeChild( pSprForma[ofs1] , true );
+		pSprForma[ofs1]->release();
+		pSprForma[ofs1]	= NULL;
+	}
+	if(pSprNumero[ofs0] != NULL)
+	{
+		removeChild( pSprNumero[ofs0] , true );
+		pSprNumero[ofs0]->release();
+		pSprNumero[ofs0]	= NULL;
+	}
+	if(pSprNumero[ofs1] != NULL)
+	{
+		removeChild( pSprNumero[ofs1] , true );
+		pSprNumero[ofs1]->release();
+		pSprNumero[ofs1]	= NULL;
+	}
+	// mueve
+	ficha[ofs1].clear();
+	memcpy( &ficha[ofs0] , &f1 , sizeof(FICHA) );
+	// crea sprites
+	if(ficha[ofs0].flagActive == true)
+		createFichaSpr( ofs0 );
+	// Log
+	CCLog("mover Ficha %i a %i",ofs0,ofs1);
 }
 //-------------------------------------------------------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------------------------------------------------------
 void SceneGame::desactivarFicha(int ofs)
 {
-	pSprNumero[ofs]->setVisible(false);
-	pSprForma[ofs]->setVisible(false);
 	ficha[ofs].flagActive	= false;
 }
 //-------------------------------------------------------------------------------------------------------------------------
@@ -556,17 +603,14 @@ void SceneGame::desactivarFicha(int ofs)
 //-------------------------------------------------------------------------------------------------------------------------
 void SceneGame::romperFicha(int ofs)
 {
-	pSprNumero[ofs]->setVisible(false);
-	pSprForma[ofs]->setVisible(false);
 	ficha[ofs].flagBreak	= true;
-	ficha[ofs].flagActive	= false;
 }
 //-------------------------------------------------------------------------------------------------------------------------
 // update
 //-------------------------------------------------------------------------------------------------------------------------
 void SceneGame::update(float dt)
 {
-	int		xx,yy,ofs,ofs2;
+	int		xx,yy,yy2,ofs,ofs2;
 	FICHA	tmpFicha;
 
 	for(xx=0;xx<TABLERO_LX;xx++)
@@ -577,44 +621,72 @@ void SceneGame::update(float dt)
 		// Hay ficha rota ?
 		if(ficha[ofs].flagBreak == true)
 		{
-			// si es fila de bien arriba , solo la rompe
-			if(yy == (TABLERO_LY-1)) 
-			{
-				// desactiva la ficha rota
-				desactivarFicha( ofs );
-				//
-				ficha[ofs].flagBreak	= false;
-				/*
-				ficha[ofs].flagActive	= false;
-				pSprNumero[ofs]->setVisible(false);
-				pSprForma[ofs]->setVisible(false);
-				*/
-			}
-			// si hay una ficha arriba
-			else
+			// clear ficha
+			ficha[ofs].clear();
+			// copia toda la columna hacia abajo
+			for(yy2=yy;yy2<TABLERO_LY-1;yy2++)
 			{
 				// offset de la ficha de arriba
-				ofs2	= getTableroOfs(xx,yy+1);
-				// si no es vacio la mueve hacia abajo
-				if(ficha[ofs2].flagBreak == false)
-				{
-					// copia ficha de arriba con la de abajo
-					copiarFicha( ofs , ofs2 );
-					// 
-					ficha[ofs2].flagBreak	= false;
-					// desactiva la ficha rota
-					desactivarFicha( ofs2 );
-					// la marca como que cae
-					ficha[ofs2].flagBreak	= true;
-
-				}
-				else
-				{
-					// desactiva la ficha rota
-					desactivarFicha( ofs2 );
-				}
-
+				ofs		= getTableroOfs(xx,yy2);
+				ofs2	= getTableroOfs(xx,yy2+1);
+				// copia ficha de arriba con la de abajo
+				moverFicha( ofs , ofs2 );
 			}
 		}
 	}
+}
+//-------------------------------------------------------------------------------------------------------------------------
+// init explo
+//-------------------------------------------------------------------------------------------------------------------------
+void SceneGame::initFxExplo()
+{
+	int i;
+	pTexFxExplo		= NULL;
+	pTexFxExplo		= CCTextureCache::sharedTextureCache()->addImage( "flame.png" );	
+	for(i=0;i<MAX_FX_EXPLO;i++)
+	{
+		pFxExplo[i] = CCParticleSun::create();
+		pFxExplo[i]->setVisible(false);
+		addChild( pFxExplo[i],  Z_ORDER_FX_EXPLO );
+	}
+	cont_fx_explo	= 0;
+}
+//-------------------------------------------------------------------------------------------------------------------------
+// explo
+//-------------------------------------------------------------------------------------------------------------------------
+void SceneGame::fxExplo(float xx,float yy)
+{
+	pFxExplo[cont_fx_explo]->resetSystem();
+	pFxExplo[cont_fx_explo]->setDuration(0.25f);
+	pFxExplo[cont_fx_explo]->setTexture(pTexFxExplo);
+	pFxExplo[cont_fx_explo]->setPosition(xx,yy);
+	pFxExplo[cont_fx_explo]->setLife(0.25f);
+	pFxExplo[cont_fx_explo]->setStartSize(150.0f);
+	pFxExplo[cont_fx_explo]->setVisible(true);
+	pFxExplo[cont_fx_explo]->setPosVar(ccp(75,75));
+	pFxExplo[cont_fx_explo]->setEmissionRate(95);
+	cont_fx_explo++;
+	if(cont_fx_explo >= MAX_FX_EXPLO)
+		cont_fx_explo = 0;
+}
+//-------------------------------------------------------------------------------------------------------------------------
+// update Fx Llama
+//-------------------------------------------------------------------------------------------------------------------------
+void SceneGame::updateFxExplo(float dt)
+{
+	CCPoint	p;
+	int		o;
+	/*
+	for(o=0;o<MAX_FX_EXPLO;o++)
+	{
+		if(pFxExplo[o]->isVisible() == true)
+		{
+			pFxExplo[o]->setPositionType( kCCPositionTypeGrouped );
+			p		= pFxExplo[o]->getPosition();
+			p.x		-=	movBgX;
+			p.y		-=	movBgY;
+			pFxExplo[o]->setPosition( p );
+		}
+	}
+	*/
 }

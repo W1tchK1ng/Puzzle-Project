@@ -38,8 +38,10 @@ public:
 	void			romperFicha(int ofs);
 	void			desactivarFicha(int ofs);
 	void			copiarFicha(int ofs0,int ofsD);
+	void			moverFicha(int ofs0,int ofsD);
 
 	bool			flagAcomodarTablero;
+
 
 	FICHA			ficha[TABLERO_LEN];
 	CCSprite*		pSprNumero[TABLERO_LEN];
@@ -48,12 +50,17 @@ public:
 	CCSprite*		pSprBgGame;
 
 	//-Mark------------------------------------------------//
-	//int				tableroMark[TABLERO_LEN];
-	//int				tableroBreak[TABLERO_LEN];
 	CCSprite*		pSprTableroMark[TABLERO_LEN];
 	void			resetTableroMark();
 	void			setTableroMark(int x,int y);
 
+	//-FX explo-------------------------------------------//
+	CCTexture2D*	pTexFxExplo;
+	CCParticleSun*	pFxExplo[MAX_FX_EXPLO];
+	int				cont_fx_explo;
+	void			initFxExplo();
+	void			fxExplo(float xx,float yy);
+	void			updateFxExplo(float dt);
 	//-Game-----------------------------------------------//
 	void			update(float dt);
 	void			checkMarked();

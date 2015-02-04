@@ -6,6 +6,7 @@
 #define	MAX_TEXTURE			64
 #define MAX_FICHA			256
 #define GAME_REFRESH		1.0f/30.0f
+#define MAX_FX_EXPLO		64
 //---------------------------------------------------------------------------------------------------------------------------
 #define IDX_NUMERO_1		0
 #define IDX_NUMERO_2		1
@@ -39,12 +40,13 @@
 #define IDX_TABLEROMARK		40
 //---------------------------------------------------------------------------------------------------------------------------
 #define TABLERO_LX			7
-#define TABLERO_LY			7
+#define TABLERO_LY			14
 #define TABLERO_LEN			TABLERO_LX*TABLERO_LY
 //---------------------------------------------------------------------------------------------------------------------------
-#define Z_ORDER_TABLEROMARK	40
-#define Z_ORDER_FORMA		50
+#define Z_ORDER_FX_EXPLO	70
 #define Z_ORDER_NUMERO		60
+#define Z_ORDER_FORMA		50
+#define Z_ORDER_TABLEROMARK	40
 #define Z_ORDER_BG			10
 #define Z_ORDER_BG_GAME		0
 //---------------------------------------------------------------------------------------------------------------------------
