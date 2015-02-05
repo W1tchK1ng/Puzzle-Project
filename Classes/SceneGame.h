@@ -31,9 +31,10 @@ public:
 	int				getTableroY(int len);
 	void			initTablero();
 	void			createTablero();
-	void			createFichaSpr(int ofs);
+	void			createFichaSpr(int ofs,int _modo,CCPoint* p0,CCPoint* p1);
 
 	void			createTableroSpr();
+	
 	
 	void			romperFicha(int ofs);
 	void			desactivarFicha(int ofs);
@@ -42,7 +43,7 @@ public:
 
 	bool			flagAcomodarTablero;
 
-
+	int				markCount;
 	FICHA			ficha[TABLERO_LEN];
 	CCSprite*		pSprNumero[TABLERO_LEN];
 	CCSprite*		pSprForma[TABLERO_LEN];
@@ -61,11 +62,13 @@ public:
 	void			initFxExplo();
 	void			fxExplo(float xx,float yy);
 	void			updateFxExplo(float dt);
+
 	//-Game-----------------------------------------------//
 	void			update(float dt);
 	void			checkMarked();
 	void			tableroLock();
 	void			tableroUnlock();
+
 	//-Tools-----------------------------------------------//
 	int				azar( int low , int high );
 

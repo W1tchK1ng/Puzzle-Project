@@ -19,12 +19,14 @@ FICHA::~FICHA()
 //---------------------------------------------------------------------------------------------------------------------------
 void FICHA::clear()
 {
-	color		= OFF;
-	forma		= OFF;
-	numero		= OFF;
-	flagBreak	= false;
-	flagMark	= false;
-	flagActive	= false;
+	color				= OFF;
+	forma				= OFF;
+	numero				= OFF;
+	flagBreak			= false;
+	flagMark			= false;
+	flagActive			= false;
+	flagActionFall		= false;
+	flagActionEscape	= false;
 }
 //---------------------------------------------------------------------------------------------------------------------------
 // set

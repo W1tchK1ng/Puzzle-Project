@@ -3,6 +3,7 @@
 #define ___CONSTANTES_H__
 //---------------------------------------------------------------------------------------------------------------------------
 #define	OFF					-1
+#define IMPOSIBLE			-2
 #define	MAX_TEXTURE			64
 #define MAX_FICHA			256
 #define GAME_REFRESH		1.0f/30.0f
@@ -21,9 +22,9 @@
 #define IDX_FORMA_BOX		20
 #define IDX_FORMA_CIRCLE	21
 #define IDX_FORMA_STAR		22
-#define IDX_FORMA_DONUT		23
-#define IDX_FORMA_HEXAGON	24
-#define IDX_FORMA_SPIRAL	25
+#define IDX_FORMA_HEXAGON	23
+#define IDX_FORMA_SPIRAL	24
+#define IDX_FORMA_DONUT		25
 
 #define IDX_BG_GAME			30
 #define IDX_BG_001			31
@@ -49,6 +50,10 @@
 #define Z_ORDER_TABLEROMARK	40
 #define Z_ORDER_BG			10
 #define Z_ORDER_BG_GAME		0
+//---------------------------------------------------------------------------------------------------------------------------
+#define CREATE_MODE_NORMAL	0
+#define CREATE_MODE_FALL	1
+#define CREATE_MODE_ESCAPE	2
 //---------------------------------------------------------------------------------------------------------------------------
 #endif
 //---------------------------------------------------------------------------------------------------------------------------
