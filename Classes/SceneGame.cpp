@@ -73,7 +73,7 @@ bool SceneGame::init()
 	createTablero();
 	createTableroSpr();
 	resetTableroMark();
-	// 
+	
 	initFxExplo();
 
 	// Create a "close" menu item with close icon, it's an auto release object.
