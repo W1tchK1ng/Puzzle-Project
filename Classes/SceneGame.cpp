@@ -729,7 +729,11 @@ void SceneGame::moverFicha(int ofs0,int ofs1)
 	if(ficha[ofs0].flagActive == true)
 	{
 		// a la ficha la hace caer
-		createFichaSpr( ofs0 , CREATE_MODE_FALL , &ccp(f1.posx,f1.posy) , &ccp(f0.posx,f0.posy) );
+		CCPoint p1;
+		CCPoint p2;
+		p1 = ccp(f1.posx,f1.posy);
+		p2 = ccp(f0.posx,f0.posy);
+		createFichaSpr( ofs0 , CREATE_MODE_FALL , &p1 , &p2 );
 		//createFichaSpr( ofs0 , 0 , 0 , 0 );
 	}
 
