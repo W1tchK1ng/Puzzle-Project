@@ -40,9 +40,13 @@
 
 #define IDX_TABLEROMARK		40
 //---------------------------------------------------------------------------------------------------------------------------
-#define TABLERO_LX			7
-#define TABLERO_LY			14
+#define TABLERO_OX			64
+#define TABLERO_OY			64
+#define TABLERO_LX			4
+#define TABLERO_LY			10
 #define TABLERO_LEN			TABLERO_LX*TABLERO_LY
+#define FICHA_LX			128
+#define FICHA_LY			128
 //---------------------------------------------------------------------------------------------------------------------------
 #define Z_ORDER_FX_EXPLO	70
 #define Z_ORDER_NUMERO		60

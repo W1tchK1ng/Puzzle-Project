@@ -34,8 +34,8 @@ AppDelegate::~AppDelegate()
 bool AppDelegate::applicationDidFinishLaunching()
 {
     // initialize director
-    CCDirector *pDirector = CCDirector::sharedDirector();
-	CCEGLView* pEGLView = CCEGLView::sharedOpenGLView();
+    CCDirector *pDirector		= CCDirector::sharedDirector();
+	CCEGLView* pEGLView			= CCEGLView::sharedOpenGLView();
     pDirector->setOpenGLView(CCEGLView::sharedOpenGLView());
 	// Set the design resolution
     pEGLView->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, kResolutionShowAll);
@@ -76,10 +76,10 @@ bool AppDelegate::applicationDidFinishLaunching()
 
 	// Calcule las pulgadas del Device
 	int dpi = CCDevice::getDPI();	
-	CCSize frameSize2 = pEGLView->getFrameSize();
+	CCSize frameSize2	= pEGLView->getFrameSize();
 	CCSize inches;	
-	inches.width = frameSize2.width/dpi;
-	inches.height = frameSize2.height/dpi;
+	inches.width		= frameSize2.width/dpi;
+	inches.height		= frameSize2.height/dpi;
 	float hipotenusa = sqrt(inches.width*inches.width + inches.height*inches.height);	
 	//AppData::device_inches = hipotenusa;
 

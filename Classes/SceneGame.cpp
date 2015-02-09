@@ -108,8 +108,8 @@ void SceneGame::createTablero()
 		ficha[o].x		= o % TABLERO_LX;
 		ficha[o].y		= o / TABLERO_LX;
 		ficha[o].ofs	= o;
-		ficha[o].posx	= float(128+(ficha[o].x*128));
-		ficha[o].posy	= float(128+(ficha[o].y*128));
+		ficha[o].posx	= float(TABLERO_OX+(ficha[o].x*FICHA_LX));
+		ficha[o].posy	= float(TABLERO_OY+(ficha[o].y*FICHA_LY));
 	}
 }
 //---------------------------------------------------------------------------------------------------------------------------
@@ -229,7 +229,7 @@ void SceneGame::createTableroSpr()
 		pSprBg->initWithTexture( pTex[IDX_BG_001] );
 		pSprBg->setAnchorPoint(ccp(0.0f,0.0f));
 		pSprBg->setVisible(true);
-		pSprBg->setPosition(ccp(128-64,128-64));
+		pSprBg->setPosition(ccp(0,0));
 		addChild(pSprBg,Z_ORDER_BG);
 	}
 	if(pSprBgGame == NULL)
@@ -475,7 +475,7 @@ void SceneGame::setTableroMark(int xx,int yy)
 		return;
 	markCount++;
 	pSprTableroMark[idx]->setVisible(true);
-	pSprTableroMark[idx]->setPosition(ccp(128+xx*128,128+yy*128));
+	pSprTableroMark[idx]->setPosition(ccp(TABLERO_OX+xx*FICHA_LX,TABLERO_OY+yy*FICHA_LY));
 	ficha[idx].flagMark		= true;
 	CCLog("setTableroMark(%i,%i) [ofs=%i]",xx,yy,idx);
 }
@@ -553,7 +553,7 @@ void SceneGame::checkMarked()
 	//
 	// revision #1 : suma los valores de las fichas
 	//
-	if((sumaAct == 10)||(sumaAct == 20)||(sumaAct == 30))
+	if((sumaAct % 10) == 0)
 	{
 		CCLog("Bingo #1");
 		for(xx=0;xx<TABLERO_LX;xx++)
