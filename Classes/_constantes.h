@@ -40,9 +40,9 @@
 
 #define IDX_TABLEROMARK		40
 //---------------------------------------------------------------------------------------------------------------------------
-#define TABLERO_OX			64
-#define TABLERO_OY			64
-#define TABLERO_LX			4
+#define TABLERO_OX			128
+#define TABLERO_OY			128
+#define TABLERO_LX			5
 #define TABLERO_LY			10
 #define TABLERO_LEN			TABLERO_LX*TABLERO_LY
 #define FICHA_LX			128
@@ -52,8 +52,8 @@
 #define Z_ORDER_NUMERO		60
 #define Z_ORDER_FORMA		50
 #define Z_ORDER_TABLEROMARK	40
-#define Z_ORDER_BG			10
-#define Z_ORDER_BG_GAME		0
+#define Z_ORDER_BG			0
+#define Z_ORDER_BG_GAME		10
 //---------------------------------------------------------------------------------------------------------------------------
 #define CREATE_MODE_NORMAL	0
 #define CREATE_MODE_FALL	1
