@@ -469,13 +469,62 @@ void SceneGame::resetTableroMark()
 //-------------------------------------------------------------------------------------------------------------------------
 void SceneGame::setTableroMark(int xx,int yy)
 {
-	int idx;
-	idx	= getTableroOfs(xx,yy);
+	int					idx;
+	int					i;
+	CCActionInterval*	action[8];
+	CCActionInterval*	seq[8];
+	// init
+	for(i=0;i<8;i++)
+	{
+		action[i]	= NULL;
+		seq[i]		= NULL;
+	}
+
+	idx					= getTableroOfs(xx,yy);
+	// si ya esta activa retorna
 	if(ficha[idx].flagMark == true)
 		return;
+	// agrega mark
 	markCount++;
 	pSprTableroMark[idx]->setVisible(true);
 	pSprTableroMark[idx]->setPosition(ccp(TABLERO_OX+xx*FICHA_LX,TABLERO_OY+yy*FICHA_LY));
+	pSprTableroMark[idx]->stopAllActions();
+	pSprTableroMark[idx]->setScale(0.20f);
+	pSprTableroMark[idx]->setRotation(0.0f);
+	// acciones
+	action[0]	= CCScaleTo::create( 0.35f , 1.75f );
+	action[1]	= CCScaleTo::create( 0.25f , 1.00f );
+	seq[0]		= (CCActionInterval*)(CCSequence::create(action[0],action[1],NULL) );
+	pSprTableroMark[idx]->runAction(seq[0]);
+	//
+	action[2]	= CCRotateBy::create( 1.00f , 720.0f );
+	pSprTableroMark[idx]->runAction(action[2]);
+	// Ficha hace accion
+	pSprForma[idx]->stopAllActions();
+	pSprForma[idx]->setScale(1.0f);
+	action[3]	= CCScaleTo::create( 0.20f , 1.50f );
+	action[4]	= CCScaleTo::create( 0.20f , 1.00f );
+	seq[1]		= (CCActionInterval*)(CCSequence::create(action[3],action[4],NULL) );
+	pSprForma[idx]->runAction(seq[1]);
+	// Ficha hace accion
+	pSprNumero[idx]->stopAllActions();
+	pSprNumero[idx]->setScale(1.0f);
+	action[5]	= CCScaleTo::create( 0.20f , 1.50f );
+	action[6]	= CCScaleTo::create( 0.20f , 1.00f );
+	seq[2]		= (CCActionInterval*)(CCSequence::create(action[5],action[6],NULL) );
+	pSprNumero[idx]->runAction(seq[2]);
+
+	/*
+	CCActionInterval*	rot			= CCRotateBy::create(0.75f,360.0f);
+	CCRepeatForever*	repeat		= CCRepeatForever::create( rot );
+	//
+	CCActionInterval* scale1		= CCScaleBy::create(0.5f,1.40f);
+	CCActionInterval* scale2		= scale1->reverse();
+	CCActionInterval* seq			= (CCActionInterval*)(CCSequence::create(scale1,scale2,NULL) );
+	CCRepeatForever* action			= CCRepeatForever::create(seq);
+	spr->runAction(action);
+	*/
+
 	ficha[idx].flagMark		= true;
 	CCLog("setTableroMark(%i,%i) [ofs=%i]",xx,yy,idx);
 }
