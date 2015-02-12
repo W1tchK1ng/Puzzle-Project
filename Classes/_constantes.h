@@ -53,7 +53,7 @@
 #define Z_ORDER_FORMA		50
 #define Z_ORDER_TABLEROMARK	40
 #define Z_ORDER_BG			0
-#define Z_ORDER_BG_GAME		10
+#define Z_ORDER_BG_GAME		-10
 //---------------------------------------------------------------------------------------------------------------------------
 #define CREATE_MODE_NORMAL	0
 #define CREATE_MODE_FALL	1

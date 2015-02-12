@@ -54,12 +54,12 @@ bool SceneGame::init()
 	pTex[IDX_NUMERO_4]				= CCTextureCache::sharedTextureCache()->addImage( "4.png" );
 	pTex[IDX_NUMERO_5]				= CCTextureCache::sharedTextureCache()->addImage( "5.png" );
 	pTex[IDX_NUMERO_6]				= CCTextureCache::sharedTextureCache()->addImage( "6.png" );
-	//pTex[IDX_NUMERO_7]				= CCTextureCache::sharedTextureCache()->addImage( "7.png" );
-	pTex[IDX_NUMERO_7]				= CCTextureCache::sharedTextureCache()->addImage( "cock.png" );
-	//pTex[IDX_NUMERO_8]				= CCTextureCache::sharedTextureCache()->addImage( "8.png" );
-	pTex[IDX_NUMERO_8]				= CCTextureCache::sharedTextureCache()->addImage( "swan.png" );
-	//pTex[IDX_NUMERO_9]				= CCTextureCache::sharedTextureCache()->addImage( "9.png" );
-	pTex[IDX_NUMERO_9]				= CCTextureCache::sharedTextureCache()->addImage( "bird.png" );
+	pTex[IDX_NUMERO_7]				= CCTextureCache::sharedTextureCache()->addImage( "7.png" );
+	//pTex[IDX_NUMERO_7]				= CCTextureCache::sharedTextureCache()->addImage( "cock.png" );
+	pTex[IDX_NUMERO_8]				= CCTextureCache::sharedTextureCache()->addImage( "8.png" );
+	//pTex[IDX_NUMERO_8]				= CCTextureCache::sharedTextureCache()->addImage( "swan.png" );
+	pTex[IDX_NUMERO_9]				= CCTextureCache::sharedTextureCache()->addImage( "9.png" );
+	//pTex[IDX_NUMERO_9]				= CCTextureCache::sharedTextureCache()->addImage( "bird.png" );
 
 	pTex[IDX_FORMA_BOX]				= CCTextureCache::sharedTextureCache()->addImage( "box.png" );
 	pTex[IDX_FORMA_CIRCLE]			= CCTextureCache::sharedTextureCache()->addImage( "circle.png" );
@@ -69,8 +69,8 @@ bool SceneGame::init()
 	pTex[IDX_FORMA_SPIRAL]			= CCTextureCache::sharedTextureCache()->addImage( "spiral.png" );
 	pTex[IDX_TABLEROMARK]			= CCTextureCache::sharedTextureCache()->addImage( "boxmark.png" );
 	pTex[IDX_BG_001]				= CCTextureCache::sharedTextureCache()->addImage( "bg001.png" );
-	//pTex[IDX_BG_GAME]				= CCTextureCache::sharedTextureCache()->addImage( "gamebg.png" );
-	pTex[IDX_BG_GAME]				= CCTextureCache::sharedTextureCache()->addImage( "inca.png" );
+	pTex[IDX_BG_GAME]				= CCTextureCache::sharedTextureCache()->addImage( "gamebg.png" );
+	//pTex[IDX_BG_GAME]				= CCTextureCache::sharedTextureCache()->addImage( "inca.png" );
 
 	// inicializa los sprites
 	initTablero();
@@ -233,7 +233,7 @@ void SceneGame::createTableroSpr()
 		pSprBg->initWithTexture( pTex[IDX_BG_001] );
 		//pSprBg->setAnchorPoint(ccp(0.0f,0.0f));
 		pSprBg->setVisible(true);
-		pSprBg->setPosition(ccp(_HLX,_HLY));
+		pSprBg->setPosition(ccp(_HLX,_HLY+64));
 		addChild(pSprBg,Z_ORDER_BG);
 	}
 	if(pSprBgGame == NULL)
