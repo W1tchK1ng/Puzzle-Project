@@ -99,15 +99,31 @@ bool SceneGame::init()
 //---------------------------------------------------------------------------------------------------------------------------
 void SceneGame::createTablero()
 {
-	int o;
+	int	o,valor,total;
+	total	= 0;
 	for(o=0;o<TABLERO_LEN;o++)
 	{
+		// numero
+		if(o==(TABLERO_LEN-1))
+		{
+			// valor es lo que falta para que la suma de todas las fichas sea multiplo de 10
+			valor	= 10 - total%10;
+			// si justo da multiplo de 10 faltando crear la ultima ficha 
+			// entonces crea un nivel nuevo de cero
+			if(valor == 0)
+			{
+				o		= 0;
+				total	= 0;
+				valor	= azar( 1 , 10 );
+				CCLog("ATENCION!! : Se creo el nivel otra vez por ser todas las fichas-1 multiplo de 10");
+			}
+		}
+		else
+			valor	= azar( 1 , 10 );
+
+		total	+= valor;
 		// datos basicos de la ficha
-		ficha[o].set( 
-			azar( IDX_NUMERO_1 , IDX_NUMERO_9+1 ) , 
-			azar( IDX_FORMA_BOX,IDX_FORMA_DONUT+0)  , 
-			azar( IDX_COLOR_ROJO,IDX_COLOR_NEGRO+1)
-			);
+		ficha[o].set( valor-1 , azar( IDX_FORMA_BOX,IDX_FORMA_DONUT+0) , azar( IDX_COLOR_ROJO,IDX_COLOR_NEGRO+1) );
 		// set data
 		ficha[o].x		= o % TABLERO_LX;
 		ficha[o].y		= o / TABLERO_LX;
@@ -115,6 +131,9 @@ void SceneGame::createTablero()
 		ficha[o].posx	= float(TABLERO_OX+(ficha[o].x*FICHA_LX));
 		ficha[o].posy	= float(TABLERO_OY+(ficha[o].y*FICHA_LY));
 	}
+
+	// log
+	CCLog("Todas las fichas del nivel suman : %i",total);
 }
 //---------------------------------------------------------------------------------------------------------------------------
 // create ficha spr
@@ -124,10 +143,14 @@ void SceneGame::createFichaSpr(int idx,int _modo,CCPoint* p0,CCPoint* p1)
 	CCPoint				pos;
 	CCActionInterval*	action1;
 	CCActionInterval*	action2;
+	CCActionInterval*	action3;
+	CCActionInterval*	action4;
 
 	// init
 	action1				= NULL;
 	action2				= NULL;
+	action3				= NULL;
+	action4				= NULL;
 
 	// filtros
 	if(idx < 0)					{ CCLog("ERROR : SceneGame::createFichaSpr(%i) ofs menor que cero"); return; }
@@ -171,8 +194,14 @@ void SceneGame::createFichaSpr(int idx,int _modo,CCPoint* p0,CCPoint* p1)
 	if(_modo == CREATE_MODE_FALL)
 	{
 		pos		= *p0;
-		action1	= CCMoveTo::create( 0.2f , *p1 );
-		action2	= CCMoveTo::create( 0.2f , *p1 );
+		action1	= CCMoveTo::create( 0.5f , *p1 );
+		action2	= CCMoveTo::create( 0.5f , *p1 );
+
+		action3	= CCEaseIn::create( action1 , 2.0f );
+		action4	= CCEaseIn::create( action2 , 2.0f );
+		
+		//action1	= CCJumpTo::create( 0.2f , *p1 , -25.0f , 1 );
+		//action2	= CCJumpTo::create( 0.2f , *p1 , -25.0f , 1 );
 	}
 	// posicion basica
 	else
@@ -195,11 +224,15 @@ void SceneGame::createFichaSpr(int idx,int _modo,CCPoint* p0,CCPoint* p1)
 	}
 	// action
 	if(action1 != NULL)
-		pSprForma[idx]->runAction( action1 );
+	{
+		pSprForma[idx]->runAction( action3 );
+	}
 	if(action2 != NULL)
-		pSprNumero[idx]->runAction( action2 );
+	{
+		pSprNumero[idx]->runAction( action4 );
+	}
 
-	CCLog("createFichaSpr(%i,%i,ccp,ccp)",idx,_modo);
+	//CCLog("createFichaSpr(%i,%i,ccp,ccp)",idx,_modo);
 
 }
 //---------------------------------------------------------------------------------------------------------------------------
@@ -630,7 +663,7 @@ void SceneGame::checkMarked()
 		// reset marks
 		resetTableroMark();
 	}
-
+	/*
 	//
 	// revision #2 : las fichas tienen la misma forma ?
 	//
@@ -694,6 +727,7 @@ void SceneGame::checkMarked()
 			resetTableroMark();
 		}
 	}
+		*/
 }
 //-------------------------------------------------------------------------------------------------------------------------
 // copiar ficha
