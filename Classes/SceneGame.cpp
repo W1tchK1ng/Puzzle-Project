@@ -1,5 +1,7 @@
 //---------------------------------------------------------------------------------------------------------------------------
 #include "SceneGame.h"
+#include "AdmobHelper.h"
+
 //---------------------------------------------------------------------------------------------------------------------------
 using namespace cocos2d;
 //---------------------------------------------------------------------------------------------------------------------------
@@ -87,10 +89,14 @@ bool SceneGame::init()
 	pNewMapItem->setPosition(ccp( _LX - 20, 60));
 	CCMenu* pMenu = CCMenu::create(pCloseItem,pNewMapItem,NULL);
 	pMenu->setPosition(CCPointZero);
-	addChild(pMenu, 1);
+	addChild(pMenu, 1, 10);
 
 	// Update
 	schedule( schedule_selector( SceneGame::update ) , GAME_REFRESH );
+	
+	#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID) 
+	if (!AdmobHelper::isAdShowing) AdmobHelper::showAd();
+	#endif
 
 	return true;
 }
@@ -299,6 +305,7 @@ void SceneGame::createTableroSpr()
 			addChild( pSprTableroMark[o] , Z_ORDER_TABLEROMARK );
 		}
 	}
+
 }
 //---------------------------------------------------------------------------------------------------------------------------
 // menu close callback
@@ -312,10 +319,21 @@ void SceneGame::menuCloseCallback(CCObject* pSender)
 //---------------------------------------------------------------------------------------------------------------------------
 void SceneGame::menuNewMapCallback(CCObject* pSender)
 {
+	CCMenu* pMenu = (CCMenu*) getChildByTag(10);
+	pMenu->setTouchEnabled(false);
+	pMenu->setEnabled(false);
+	pMenu->setVisible(false);
+
 	// Fichas en tablero
 	createTablero();
 	// Sprites de fichas
 	createTableroSpr();
+	//pMenu->setTouchEnabled(true);
+	
+	
+	pMenu->setTouchEnabled(true);
+	pMenu->setEnabled(true);
+	pMenu->setVisible(true);
 }
 //-------------------------------------------------------------------------------------------------------------------------
 // azar
