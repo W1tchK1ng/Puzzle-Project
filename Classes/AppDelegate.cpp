@@ -2,7 +2,7 @@
 #include "cocos2d.h"
 #include "CCEGLView.h"
 #include "AppDelegate.h"
-#include "SceneGame.h"
+#include "Inicio.h"
 #include "SimpleAudioEngine.h"
 #include "AppMacros.h"
 
@@ -38,7 +38,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 	CCEGLView* pEGLView			= CCEGLView::sharedOpenGLView();
     pDirector->setOpenGLView(CCEGLView::sharedOpenGLView());
 	// Set the design resolution
-    pEGLView->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, kResolutionExactFit);
+    pEGLView->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, kResolutionShowAll);
 	// Obtiene el FrameSize del Dispositivo
 	CCSize frameSize = pEGLView->getFrameSize();
 	
@@ -88,9 +88,9 @@ bool AppDelegate::applicationDidFinishLaunching()
     // turn on display FPS
     pDirector->setDisplayStats(false);
     // set FPS. the default value is 1.0/60 if you don't call this
-    pDirector->setAnimationInterval(1.0 / 30.0f);
+    pDirector->setAnimationInterval(1.0 / 60.0f);
     // create a scene. it's an autorelease object
-    CCScene *pScene = SceneGame::scene();
+    CCScene *pScene = Inicio::scene();
     // run
     pDirector->runWithScene(pScene);
     return true;

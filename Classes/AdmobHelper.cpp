@@ -3,10 +3,8 @@ Copyright (c) 2014 Mudafar
 GPLv3
 */
 
-
 #include "AdmobHelper.h"
 #include "cocos2d.h"
-
 
 bool AdmobHelper::isAdShowing = true;
 

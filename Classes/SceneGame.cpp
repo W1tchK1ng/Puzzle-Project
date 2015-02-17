@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------------------------------------------------------
 #include "SceneGame.h"
 #include "AdmobHelper.h"
+#include "Inicio.h"
 
 //---------------------------------------------------------------------------------------------------------------------------
 using namespace cocos2d;
@@ -84,9 +85,9 @@ bool SceneGame::init()
 
 	// Create a "close" menu item with close icon, it's an auto release object.
 	CCMenuItemImage *pCloseItem		= CCMenuItemImage::create( "CloseNormal.png","CloseSelected.png", this, menu_selector(SceneGame::menuCloseCallback)); 
-	pCloseItem->setPosition(ccp( _LX - 20, 20));
+	pCloseItem->setPosition(ccp( _LX - pCloseItem->getContentSize().width/2, pCloseItem->getContentSize().height/2));
 	CCMenuItemImage *pNewMapItem	= CCMenuItemImage::create( "CloseNormal.png","CloseSelected.png", this, menu_selector(SceneGame::menuNewMapCallback)); 
-	pNewMapItem->setPosition(ccp( _LX - 20, 60));
+	pNewMapItem->setPosition(ccp( pCloseItem->getContentSize().width/2, pCloseItem->getContentSize().height/2));
 	CCMenu* pMenu = CCMenu::create(pCloseItem,pNewMapItem,NULL);
 	pMenu->setPosition(CCPointZero);
 	addChild(pMenu, 1, 10);
@@ -312,7 +313,8 @@ void SceneGame::createTableroSpr()
 //---------------------------------------------------------------------------------------------------------------------------
 void SceneGame::menuCloseCallback(CCObject* pSender)
 {
-    CCDirector::sharedDirector()->end();
+	CCScene *pScene = Inicio::scene();	
+	CCDirector::sharedDirector()->replaceScene(pScene);	    
 }
 //---------------------------------------------------------------------------------------------------------------------------
 // menu new map callback
