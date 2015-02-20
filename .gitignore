@@ -62,3 +62,5 @@ Temporary Items
 
 proj.android\
 proj.win32\
+*.fla
+puzzle_bkp_1.rar

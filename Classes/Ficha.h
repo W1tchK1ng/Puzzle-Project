@@ -3,30 +3,42 @@
 #define __FICHA_H__
 //---------------------------------------------------------------------------------------------------------------------------
 #include "_constantes.h"
+#include "cocos2d.h"
+//---------------------------------------------------------------------------------------------------------------------------
+using namespace cocos2d;
 //---------------------------------------------------------------------------------------------------------------------------
 class FICHA
 {
 public:
 				FICHA();
 				~FICHA();
+	void		init();							// init
+	void		release();						// release
 
-	void		set(int n,int f,int c);			// ficha set
-	void		clear();						// ficha clear
-	
-	int			ofs;							// offset en el tablero
-	int			x,y;							// posicion en el tablero
-	float		posx,posy;						// posicion en pantalla en la que deberia estar
-
+	CCNode*		pScene;							// guarda scene que crea el sprite para luego poder liberarlo
+	CCSprite*	pSprNumero;						// 
+	CCSprite*	pSprForma;						// 
 	int			numero;							// numero de la ficha
 	int			forma;							// forma de la ficha
 	int			color;							// color de la ficha
-
-	bool		flagBreak;						// si el jugador rompio la ficha haciendo combinacion
-	bool		flagMark;						// Si esta marcado por un touch
+	int			mapX,mapY;						// posicion en el tablero
+	float		scrX,scrY;						// posicion en pantalla en la que deberia estar
+	bool		flagRompiendo;					// esta rompiendose
+	bool		flagCayendo;					// esta cayendo
+	bool		flagEscapando;					// esta escapando
+	bool		flagMarcada;					// Si esta marcado por un touch
 	bool		flagActive;						// Si esta siendo usado
 
-	bool		flagActionFall;					// accion caer
-	bool		flagActionEscape;				// accion Escapar
+	void		activar();
+	void		desactivar();
+	void		setMapPos(int _x,int _y);
+	void		setScrPos(float _x,float _y);
+	void		setForma(int _n);
+	void		setNumero(int _n);
+	void		setColor(int _n);
+	void		accionRomper();
+	void		accionCaer();
+	void		accionEscapar();
 };
 //---------------------------------------------------------------------------------------------------------------------------
 #endif

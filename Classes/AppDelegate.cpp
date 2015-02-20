@@ -39,6 +39,9 @@ bool AppDelegate::applicationDidFinishLaunching()
     pDirector->setOpenGLView(CCEGLView::sharedOpenGLView());
 	// Set the design resolution
     pEGLView->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, kResolutionShowAll);
+	//kResolutionNoBorder
+	//kResolutionShowAll
+
 	// Obtiene el FrameSize del Dispositivo
 	CCSize frameSize = pEGLView->getFrameSize();
 	

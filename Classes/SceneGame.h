@@ -17,9 +17,9 @@ class SceneGame : public cocos2d::CCLayer
 public:
 
 	//-Sizes------------------------------------------------//
-	float						_HLX,_HLY;
-	float						_LX,_LY;
-	float						_OX,_OY;
+	float			_HLX,_HLY;
+	float			_LX,_LY;
+	float			_OX,_OY;
 
 	//-Textures--------------------------------------------//
 	CCTexture2D*	pTex[MAX_TEXTURE];
@@ -29,23 +29,23 @@ public:
 	int				getTableroX(int len);
 	int				getTableroY(int len);
 	void			initTablero();
+
 	void			createTablero();
 	void			createFichaSpr(int ofs,int _modo,CCPoint* p0,CCPoint* p1);
-
 	void			createTableroSpr();
+
+
 	
-	
-	void			romperFicha(int ofs);
-	void			desactivarFicha(int ofs);
-	void			copiarFicha(int ofs0,int ofsD);
-	void			moverFicha(int ofs0,int ofsD);
+	//void			romperFicha(int ofs);
+	//void			desactivarFicha(int ofs);
+	//void			moverFicha(int ofs0,int ofsD);
 
 	bool			flagAcomodarTablero;
 
 	int				markCount;
 	FICHA			ficha[TABLERO_LEN];
-	CCSprite*		pSprNumero[TABLERO_LEN];
-	CCSprite*		pSprForma[TABLERO_LEN];
+	//CCSprite*		pSprNumero[TABLERO_LEN];
+	//CCSprite*		pSprForma[TABLERO_LEN];
 	CCSprite*		pSprBg;
 	CCSprite*		pSprBgGame;
 
