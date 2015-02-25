@@ -30,11 +30,14 @@ public:
 	int				getTableroY(int len);
 	void			initTablero();
 
-	void			createTablero();
+	void			createTablero(int _oper,int _min,int _max,int _comodin);
 	void			createFichaSpr(int ofs,int _modo,CCPoint* p0,CCPoint* p1);
 	void			createTableroSpr();
 
-
+	int				tableroOperacion;				// operacion +,*
+	int				tableroMaxValorFicha;			// maximo valor que puede alcanzar una ficha
+	int				tableroMinValorFicha;			// minimo valor que puede alcanzar una ficha
+	int				tableroValorComodin;			// valor comodin al que hay que llegar
 	
 	//void			romperFicha(int ofs);
 	//void			desactivarFicha(int ofs);

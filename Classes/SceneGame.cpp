@@ -76,11 +76,10 @@ bool SceneGame::init()
 
 	// inicializa los sprites
 	initTablero();
-	createTablero();
+	initFxExplo();
+	createTablero(OPER_ADICION , 1 , 25+1 , 5 );
 	createTableroSpr();
 	resetTableroMark();
-	
-	initFxExplo();
 
 	// Create a "close" menu item with close icon, it's an auto release object.
 	CCMenuItemImage *pCloseItem		= CCMenuItemImage::create( "CloseNormal.png","CloseSelected.png", this, menu_selector(SceneGame::menuCloseCallback)); 
@@ -103,12 +102,23 @@ bool SceneGame::init()
 //---------------------------------------------------------------------------------------------------------------------------
 // create tablero fichas
 //---------------------------------------------------------------------------------------------------------------------------
-void SceneGame::createTablero()
+void SceneGame::createTablero(int _oper,int _min,int _max,int _comodin)
 {
 	int	o,valor,total;
-	total	= 0;
+	
+	// total de todas las fichas
+	total						= 0;
+
+	// basico
+	tableroOperacion			= _oper;
+	tableroMaxValorFicha		= _max;
+	tableroMinValorFicha		= _min;
+	tableroValorComodin			= _comodin;
+	
+	// crea el valor para todas las fichas
 	for(o=0;o<TABLERO_LEN;o++)
 	{
+		/*
 		// numero
 		if(o==(TABLERO_LEN-1))
 		{
@@ -120,20 +130,24 @@ void SceneGame::createTablero()
 			{
 				o		= 0;
 				total	= 0;
-				valor	= azar( 1 , 10 );
+				valor	= azar( _min , _max );
 				CCLog("ATENCION!! : Se creo el nivel otra vez por ser todas las fichas-1 multiplo de 10");
 			}
 		}
 		else
-			valor	= azar( 1 , 10 );
+		*/
 
+		// valor de la ficha al azar
+		valor	= azar( _min , _max );
 		total	+= valor;
 		// datos basicos de la ficha
-		ficha[o].setNumero( valor-1 );
+		ficha[o].setNumero( valor );
 		ficha[o].setForma( azar( IDX_FORMA_BOX,IDX_FORMA_DONUT+0) );
 		ficha[o].setColor( azar( IDX_COLOR_ROJO,IDX_COLOR_NEGRO+1) );
 		ficha[o].activar();
-		// set data
+		// texto para crear el bmfont
+		sprintf( ficha[o].text , "%i" , valor );
+		// set basic data
 		ficha[o].setMapPos( o%TABLERO_LX , o/TABLERO_LX );
 		ficha[o].setScrPos( float(TABLERO_OX+(ficha[o].mapX*FICHA_LX)) , float(TABLERO_OY+(ficha[o].mapY*FICHA_LY)) );
 	}	
@@ -161,16 +175,17 @@ void SceneGame::createFichaSpr(int idx,int _modo,CCPoint* p0,CCPoint* p1)
 	// filtros
 	if(idx < 0)							{ CCLog("ERROR : SceneGame::createFichaSpr(%i) ofs menor que cero"); return; }
 	if(idx >= TABLERO_LEN)				{ CCLog("ERROR : SceneGame::createFichaSpr(%i) ofs mayor que TABLERO_LEN"); return; }
-	if(ficha[idx].pSprNumero != NULL)	{ CCLog("ERROR : SceneGame::createFichaSpr(%i) pSprNumero no null"); return; }
+	//if(ficha[idx].pSprNumero != NULL)	{ CCLog("ERROR : SceneGame::createFichaSpr(%i) pSprNumero no null"); return; }
 	if(ficha[idx].pSprForma	!= NULL)	{ CCLog("ERROR : SceneGame::createFichaSpr(%i) pSprForma no null"); return; }
 	if(_modo < 0)						{ CCLog("ERROR : SceneGame::createFichaSpr(%i) modo erroneo"); return; }
 
 	// alloc
-	ficha[idx].pSprNumero		= new CCSprite;
+	//ficha[idx].pSprNumero		= new CCSprite;
 	ficha[idx].pSprForma		= new CCSprite;
 	ficha[idx].pScene			= this;
 
 	// spr numero
+	/*
 	if(ficha[idx].numero == IDX_NUMERO_1)			ficha[idx].pSprNumero->initWithTexture( pTex[IDX_NUMERO_1 ] );
 	else if(ficha[idx].numero == IDX_NUMERO_2)		ficha[idx].pSprNumero->initWithTexture( pTex[IDX_NUMERO_2 ] );
 	else if(ficha[idx].numero == IDX_NUMERO_3)		ficha[idx].pSprNumero->initWithTexture( pTex[IDX_NUMERO_3 ] );
@@ -180,6 +195,7 @@ void SceneGame::createFichaSpr(int idx,int _modo,CCPoint* p0,CCPoint* p1)
 	else if(ficha[idx].numero == IDX_NUMERO_7)		ficha[idx].pSprNumero->initWithTexture( pTex[IDX_NUMERO_7 ] );
 	else if(ficha[idx].numero == IDX_NUMERO_8)		ficha[idx].pSprNumero->initWithTexture( pTex[IDX_NUMERO_8 ] );
 	else if(ficha[idx].numero == IDX_NUMERO_9)		ficha[idx].pSprNumero->initWithTexture( pTex[IDX_NUMERO_9 ] );
+	*/
 	// spr forma
 	if(ficha[idx].forma == IDX_FORMA_STAR)			ficha[idx].pSprForma->initWithTexture( pTex[IDX_FORMA_STAR ] );
 	else if(ficha[idx].forma == IDX_FORMA_CIRCLE)	ficha[idx].pSprForma->initWithTexture( pTex[IDX_FORMA_CIRCLE ] );
@@ -196,7 +212,7 @@ void SceneGame::createFichaSpr(int idx,int _modo,CCPoint* p0,CCPoint* p1)
 	else if(ficha[idx].color == IDX_COLOR_CYAN)		ficha[idx].pSprForma->setColor( ccc3(50,255,255) );
 	else if(ficha[idx].color == IDX_COLOR_BLANCO)	ficha[idx].pSprForma->setColor( ccc3(255,255,255) );
 	else if(ficha[idx].color == IDX_COLOR_NEGRO)	ficha[idx].pSprForma->setColor( ccc3(90,90,90) );
-	
+
 	// posicion segun modo
 	if(_modo == CREATE_MODE_FALL)
 	{
@@ -219,16 +235,34 @@ void SceneGame::createFichaSpr(int idx,int _modo,CCPoint* p0,CCPoint* p1)
 	// ubica sprite , agrega a scene
 	if(ficha[idx].pSprForma != NULL)
 	{
+		ficha[idx].pSprForma->stopAllActions();
+		ficha[idx].pSprForma->setScale(1.0f);
 		ficha[idx].pSprForma->setPosition(pos);
 		ficha[idx].pSprForma->setVisible(true);
 		addChild( ficha[idx].pSprForma , Z_ORDER_FORMA );
 	}
+	/*
 	if(ficha[idx].pSprNumero != NULL)
 	{
+		ficha[idx].pSprNumero->stopAllActions();
+		ficha[idx].pSprNumero->setScale(1.0f);
 		ficha[idx].pSprNumero->setPosition(pos);
 		ficha[idx].pSprNumero->setVisible(true);
 		addChild( ficha[idx].pSprNumero , Z_ORDER_NUMERO );
 	}
+	*/
+	// text
+	if(ficha[idx].pText == NULL)
+	{
+		ficha[idx].pText	= CCLabelBMFont::create( ficha[idx].text , "arial-unicode-26.fnt" , _HLX );
+		addChild( ficha[idx].pText , Z_ORDER_NUMERO );
+	}
+	ficha[idx].pText->stopAllActions();
+	ficha[idx].pText->setString(ficha[idx].text,true);
+	ficha[idx].pText->setScale(2.0f);
+	ficha[idx].pText->setPosition(pos);
+	ficha[idx].pText->setVisible(true);
+
 	// action
 	if(action1 != NULL)
 	{
@@ -236,7 +270,8 @@ void SceneGame::createFichaSpr(int idx,int _modo,CCPoint* p0,CCPoint* p1)
 	}
 	if(action2 != NULL)
 	{
-		ficha[idx].pSprNumero->runAction( action4 );
+		//ficha[idx].pSprNumero->runAction( action4 );
+		ficha[idx].pText->runAction( action4 );
 	}
 
 	//CCLog("createFichaSpr(%i,%i,ccp,ccp)",idx,_modo);
@@ -253,12 +288,14 @@ void SceneGame::createTableroSpr()
 	// release
 	for(o=0;o<TABLERO_LEN;o++)
 	{
+		/*
 		if(ficha[o].pSprNumero != NULL)
 		{
 			removeChild( ficha[o].pSprNumero , true );
 			ficha[o].pSprNumero->release();
 			ficha[o].pSprNumero	= NULL;
 		}
+		*/
 		if(ficha[o].pSprForma != NULL)
 		{
 			removeChild( ficha[o].pSprForma , true );
@@ -306,7 +343,6 @@ void SceneGame::createTableroSpr()
 			addChild( pSprTableroMark[o] , Z_ORDER_TABLEROMARK );
 		}
 	}
-
 }
 //---------------------------------------------------------------------------------------------------------------------------
 // menu close callback
@@ -327,7 +363,7 @@ void SceneGame::menuNewMapCallback(CCObject* pSender)
 	pMenu->setVisible(false);
 
 	// Fichas en tablero
-	createTablero();
+	createTablero(OPER_ADICION,1,10,10);
 	// Sprites de fichas
 	createTableroSpr();
 	//pMenu->setTouchEnabled(true);
@@ -495,7 +531,7 @@ void SceneGame::initTablero()
 	// Tablero
 	for(o=0;o<TABLERO_LEN;o++)
 	{
-		ficha[o].pSprNumero		= NULL;
+		//ficha[o].pSprNumero		= NULL;
 		ficha[o].pSprForma		= NULL;
 		pSprTableroMark[o]		= NULL;
 	}
@@ -565,12 +601,15 @@ void SceneGame::setTableroMark(int xx,int yy)
 	seq[1]		= (CCActionInterval*)(CCSequence::create(action[3],action[4],NULL) );
 	ficha[idx].pSprForma->runAction(seq[1]);
 	// Ficha hace accion
+	// pText action
+	/*
 	ficha[idx].pSprNumero->stopAllActions();
 	ficha[idx].pSprNumero->setScale(1.0f);
 	action[5]	= CCScaleTo::create( 0.20f , 1.50f );
 	action[6]	= CCScaleTo::create( 0.20f , 1.00f );
 	seq[2]		= (CCActionInterval*)(CCSequence::create(action[5],action[6],NULL) );
 	ficha[idx].pSprNumero->runAction(seq[2]);
+	*/
 
 	/*
 	CCActionInterval*	rot			= CCRotateBy::create(0.75f,360.0f);
@@ -612,11 +651,10 @@ int SceneGame::getTableroY(int ofs)
 //-------------------------------------------------------------------------------------------------------------------------
 void SceneGame::checkMarked()
 {
-	int		xx,yy,ofs;
+	int		ofs;
 	int		sumaRes,sumaAct;
 	int		chkForma;
 	int		chkColor;
-	bool	flagBreaked;
 
 	// suma resultado 10 , suma actual 0
 	sumaRes		= 10;
@@ -624,21 +662,18 @@ void SceneGame::checkMarked()
 	// forma empieza en OFF
 	chkForma	= OFF;
 	chkColor	= OFF;
-	// flag si las fichas rompieron
-	flagBreaked	= false;
 
-	// create
-	for(xx=0;xx<TABLERO_LX;xx++)
-	for(yy=0;yy<TABLERO_LY;yy++)
+	// todas las fichas
+	for(ofs=0;ofs<TABLERO_LEN;ofs++)
 	{
-		// offset
-		ofs		= getTableroOfs(xx,yy);
-		// check suma
+		// filtros
+		if(ficha[ofs].flagRota == false)
+		if(ficha[ofs].flagRompiendo == false)
 		if(ficha[ofs].flagMarcada == true)
 		{
-			// suma
-			sumaAct	+= (ficha[ofs].numero+1);
-			// forma
+			// suma de las fichas
+			sumaAct	+= ficha[ofs].numero;
+			// check forma
 			if(chkForma != IMPOSIBLE)
 			{
 				if(chkForma == OFF)
@@ -646,7 +681,7 @@ void SceneGame::checkMarked()
 				else if(chkForma != ficha[ofs].forma)
 					chkForma	= IMPOSIBLE;
 			}
-			// color
+			// check color
 			if(chkColor != IMPOSIBLE)
 			{
 				if(chkColor == OFF)
@@ -656,24 +691,19 @@ void SceneGame::checkMarked()
 			}
 		}
 	}
-
-	//
+	// --------------------------------------------
 	// revision #1 : suma los valores de las fichas
-	//
-	if((sumaAct % 10) == 0)
+	// --------------------------------------------
+	if((sumaAct % tableroValorComodin) == 0)
 	{
-		CCLog("Bingo #1");
-		for(xx=0;xx<TABLERO_LX;xx++)
-		for(yy=0;yy<TABLERO_LY;yy++)
+		// todas las fichas
+		for(ofs=0;ofs<TABLERO_LEN;ofs++)
 		{
-			// offset de la ficha
-			ofs		= getTableroOfs(xx,yy);
 			// rompe ficha
+			if(ficha[ofs].flagRota == false)
 			if(ficha[ofs].flagMarcada == true)
 			if(ficha[ofs].flagActive == true)
 			{
-				// flag
-				flagBreaked		= true;
 				// rompe ficha
 				ficha[ofs].accionRomper();
 				// fx explo
@@ -885,29 +915,38 @@ void SceneGame::updateFxExplo(float dt)
 //-------------------------------------------------------------------------------------------------------------------------
 void SceneGame::update(float dt)
 {
-	int		xx,yy,yy2,ofs,ofs2;
+	int		ofs,idx;
 	FICHA	tmpFicha;
+	bool	flagVacio;
 
-	for(xx=0;xx<TABLERO_LX;xx++)
-	for(yy=0;yy<TABLERO_LY;yy++)
+	// revisa fichas que se estan rompiendo
+	for(ofs=0;ofs<TABLERO_LEN;ofs++)
 	{
-		ofs		= getTableroOfs(xx,yy);
-		//ofs		= ficha[ofs].ofs;
-		// Hay ficha rota ?
+		// Hay ficha que se esta rompiendo ?
 		if(ficha[ofs].flagRompiendo == true)
-		if(ficha[ofs].pSprNumero->numberOfRunningActions() == 0)
+		//if(ficha[ofs].pSprForma->numberOfRunningActions() == 0)
 		{
-			// clear ficha
-			//ficha[ofs].init();
-			// copia toda la columna hacia abajo
-			for(yy2=yy;yy2<TABLERO_LY-1;yy2++)
+			// ficha rota
+			ficha[ofs].flagRota			= true;
+			ficha[ofs].flagRompiendo	= false;
+		}
+	}
+
+	// revisa fichas que pueden caer
+	flagVacio	= true;
+	for(ofs=0;ofs<TABLERO_LEN;ofs++)			// ficha de arriba
+	{
+		// la linea de bien abajo , no puede caer
+		if(ficha[ofs].mapY > 0)
+		{
+			for(idx=0;idx<TABLERO_LEN;idx++)	// ficha de abajo
 			{
-				// offset de la ficha de arriba
-				ofs		= getTableroOfs(xx,yy2);
-				ofs2	= getTableroOfs(xx,yy2+1);
-				// copia ficha de arriba con la de abajo
-				//moverFicha( ofs , ofs2 );
+				if(ficha[ofs].mapY-1 == ficha[ofs].mapY)
+				{
+					flagVacio	= false;
+				}
 			}
 		}
 	}
+
 }

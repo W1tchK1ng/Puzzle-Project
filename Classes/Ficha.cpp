@@ -19,12 +19,14 @@ FICHA::~FICHA()
 //---------------------------------------------------------------------------------------------------------------------------
 void FICHA::release()
 {
+	/*
 	if(pSprNumero != NULL)
 	{
 		pScene->removeChild( pSprNumero , true );
 		pSprNumero->release();
 		pSprNumero	= NULL;
 	}
+	*/
 	if(pSprForma != NULL)
 	{
 		pScene->removeChild( pSprForma , true );
@@ -41,14 +43,17 @@ void FICHA::init()
 	color				= OFF;
 	forma				= OFF;
 	numero				= OFF;
-	pSprNumero			= NULL;
+	//pSprNumero			= NULL;
 	pSprForma			= NULL;
 	pScene				= NULL;
+	pText				= NULL;
 	flagMarcada			= false;
 	flagActive			= false;
 	flagCayendo			= false;
 	flagEscapando		= false;
 	flagRompiendo		= false;
+	flagRota			= false;
+	strcpy(text,"0");
 }
 //---------------------------------------------------------------------------------------------------------------------------
 // numero
@@ -86,6 +91,14 @@ void FICHA::setMapPos(int _x,int _y)
 {
 	mapX	= _x;
 	mapY	= _y;
+}
+//---------------------------------------------------------------------------------------------------------------------------
+// set
+//---------------------------------------------------------------------------------------------------------------------------
+void FICHA::setText(char* txt)
+{
+
+
 }
 //---------------------------------------------------------------------------------------------------------------------------
 // romper
