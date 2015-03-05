@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="128" tilewidth="66" tileheight="66" nextobjectid="1">
+ <tileset firstgid="1" name="spritesheet" tilewidth="66" tileheight="66" spacing="2" margin="2">
+  <image source="spritesheet.png" width="640" height="800"/>
+ </tileset>
+ <layer name="Capa de Patrones 1" width="32" height="128">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+2YsWrDMBCG3akZu3TJZAIdWrqEZGihdCh5gth5/1epBRYRh0463Um2Cb/hG0pjfXdnWdK563DhWu96UwI//Fvza8Z4FL92jBp+yxhWv/Z+K1vwr+WGHwAAAAAAAAAAAAAAAAAAADwa+4DDzPOK/mFBfyz3p4ld8Delhdv7r3PunNtzqeymzz7nd7xXdHvGhv6UN6zBy8RrZb/U7bgJayD1S9x7MrarQZ+pg8Qvdcdi8OuAxv9NfquNITUXlvCPiRg4/8/Ep8FPY+DWBM5vyT0WA7cmLuXn9gOp31L/1DvQyh/ex+V+ZNxafyy/1F5Y8u6lYuDWljGT+6/CT2Og/xuEdU+5c34O5+sDtG6NX3LmkbodXxN/hbnTfJ3vFCB1hzGcCDSm2Bw7Kn0S6HOJuVt43X507u570rCgW5P3xxwvh8Ufm+t0Lcu9P5Jzl695WHcP9V9IfvT3Gj+Xg7S/aeV3SM/3HJLeK+VPnelq1SA3h67GGFL+2Pmz9lzQ7P8xnH9Y0a99BrX8vgbXFf2+1/RYe2/N+ad0Trby5749pfzS9Zsj12+H0D3jbMi5NPcW1NiXtF5r7rleJsYt8PZKt7SXChkreGNuqd/q5dwSf605pvXXeL9Ke3gu99JxNN+swnl+mP2abyCae/yZIuyrdwVjWb5X9V28j2/pTj3/1l6wDf4Bm6+CkwBAAAA=
+  </data>
+ </layer>
+</map>

@@ -1,6 +1,7 @@
 #include "Inicio.h"
 #include "SceneGame.h"
 #include "cocos-ext.h"
+#include "TileMap.h"
 
 
 //#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
@@ -52,8 +53,7 @@ bool Inicio::init()
 	// Crea una UILayer y la pone como child de la Scene actual
 	UILayer *myView = UILayer::create();
 	this->addChild(myView, 0, 1000);	
-	UIWidget* widget;	
-			
+	UIWidget* widget;			
 	widget = GUIReader::shareReader()->widgetFromJsonFile("puzzle.json");		
 	myView->addWidget(widget);
 
@@ -65,28 +65,50 @@ bool Inicio::init()
 	imageMenu = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_Fondo_Menu"));
 	imageMenu->setEnabled(false);
 	imageMenu->setVisible(false);
-	imageMenu->setTouchEnabled(false);			
+	imageMenu->setTouchEnabled(false);	
+	
 	UIButton* btn1 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Jugar"));
-	btn1->setEnabled(false);
-	btn1->setVisible(false);
+	btn1->setEnabled(false);btn1->setVisible(false);
 	UIButton* btn2 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Facebook"));
-	btn2->setEnabled(false);
-	btn2->setVisible(false);
+	btn2->setEnabled(false);btn2->setVisible(false);
 	UIButton* btn3 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Tienda"));
-	btn3->setEnabled(false);
-	btn3->setVisible(false);	
+	btn3->setEnabled(false);btn3->setVisible(false);	
 	UIButton* btn4 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Salir"));
-	btn4->setEnabled(false);
-	btn4->setVisible(false);	
+	btn4->setEnabled(false);btn4->setVisible(false);	
+	UIButton* btn5 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Rankings"));
+	btn5->setEnabled(false);btn4->setVisible(false);	
+	UIButton* btn6 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Facebook"));
+	btn6->setEnabled(false);btn6->setVisible(false);
+	UIButton* btn7 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Tienda"));	
+	btn7->setEnabled(false);btn7->setVisible(false);
+	UIButton* btn8 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Setting"));
+	btn8->setEnabled(false);btn8->setVisible(false);
+	UIButton* btn9 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Gift"));
+	btn9->setEnabled(false);btn9->setVisible(false);
+	UIButton* btn10 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Sound"));
+	btn10->setEnabled(false);btn10->setVisible(false);
+	UIImageView *imageArco = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_Arco"));
+	imageArco->setEnabled(false); imageArco->setVisible(false);
+
 	btn1->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate));
 	btn2->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate));  
 	btn3->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate));  	
-	btn4->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate));  	
-
-	CCActionInterval *seq1 = (CCActionInterval*)CCSequence::create(CCDelayTime::create(2.0f), CCCallFunc::create(this, callfunc_selector(Inicio::ActiveMenu)), NULL); 		
+	btn4->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate));	
+	btn5->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate));	
+	btn6->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate));
+	btn7->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate));  
+	btn8->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate));  	
+	btn9->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate));  	
+	btn10->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate));  	
+	
+	CCActionInterval *seq1 = (CCActionInterval*)CCSequence::create(CCDelayTime::create(0.5f), CCCallFunc::create(this, callfunc_selector(Inicio::ActiveMenu)), NULL); 		
 	this->runAction(seq1);	
 
+	CCLOG("preload music");
 	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("intro.mp3");	
+	UIImageView* imageNoSound = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_NoSound"));
+	imageNoSound->setEnabled(false);
+	imageNoSound->setVisible(false);
 	
     return true;
 }
@@ -114,41 +136,43 @@ CCLOG("Button Name: %s", btn->getName());
 
 				if (std::strcmp(btn->getName(), "Button_Jugar")==0)
 					{
-					CCActionInterval *seq1a = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.5f), NULL); 		
-					CCActionInterval *seq1b = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.5f), NULL); 
-					CCActionInterval *seq1c = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.5f), NULL); 
-					CCActionInterval *seq1d = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.5f), NULL); 		
-					CCActionInterval *seq1e = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.5f), NULL); 
-					CCActionInterval *seq1f = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.5f), NULL); 					
-					CCActionInterval *seq1g = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.5f), NULL); 					
-					CCActionInterval *seq1h = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.5f), NULL); 					
-					CCActionInterval *seq1i = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.5f), NULL); 	
-					imageMenu->runAction(seq1a);
-					UILayer* myView = (UILayer*) this->getChildByTag(1000);
-					UIButton* btn1 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Jugar"));
-					UIButton* btn2 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Facebook"));
-					UIButton* btn3 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Tienda"));
-					UIButton* btn4 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Salir"));
-					btn1->runAction(seq1b);
-					btn2->runAction(seq1c);
-					btn3->runAction(seq1g);
-					btn4->runAction(seq1h);
-					UILabelBMFont *label_jugar = dynamic_cast <UILabelBMFont*>(myView->getWidgetByName("Label_Jugar")); 
-					UILabelBMFont *label_facebook = dynamic_cast <UILabelBMFont*>(myView->getWidgetByName("Label_Facebook"));
-					UILabelBMFont *label_tienda = dynamic_cast <UILabelBMFont*>(myView->getWidgetByName("Label_Tienda"));
-					label_jugar->runAction(seq1d);
-					label_facebook->runAction(seq1e);
-					label_tienda->runAction(seq1i);
-					UIImageView* image_facebook = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_10"));
-					image_facebook->runAction(seq1f);
+					FadeOutBotonera();
+					FadeOutAjustes();
 					CCActionInterval *seq2 = (CCActionInterval*)CCSequence::create(CCDelayTime::create(0.5f), CCCallFunc::create(this, callfunc_selector(Inicio::GotoSceneGame)), NULL); 		
 					this->runAction(seq2);					
 					}
 
 				if (std::strcmp(btn->getName(), "Button_Facebook")==0) 
 					{
-
+					FadeOutBotonera();
+					FadeOutAjustes();
+					CCActionInterval *seq2 = (CCActionInterval*)CCSequence::create(CCDelayTime::create(0.5f), CCCallFunc::create(this, callfunc_selector(Inicio::GotoSceneTileMap)), NULL); 		
+					this->runAction(seq2);					
 					}		
+
+				if (std::strcmp(btn->getName(), "Button_Sound")==0) 
+					{
+					UILayer* myView = (UILayer*) this->getChildByTag(1000);
+					UIImageView* imageNoSound = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_NoSound"));
+					
+					if(flag_music == true) 
+						{imageNoSound->setEnabled(true);
+						 SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
+						 flag_music = false;
+						 CCLOG("pause music");
+						}
+					else{
+						imageNoSound->setEnabled(false);
+						SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+						if (!SimpleAudioEngine::sharedEngine()->isBackgroundMusicPlaying()) 
+								SimpleAudioEngine::sharedEngine()->playBackgroundMusic("intro.mp3",true);
+						CCLOG("resume music");
+						flag_music = true;
+						}
+
+
+					}	
+
 				if (std::strcmp(btn->getName(), "Button_Salir")==0) 
 					{					
 					#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
@@ -158,8 +182,8 @@ CCLOG("Button Name: %s", btn->getName());
 					#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
 					exit(0);
 					#endif
-					}
-				#endif
+					#endif
+				}				
 
 				break;
             
@@ -174,8 +198,20 @@ CCLOG("Button Name: %s", btn->getName());
 
 void Inicio::GotoSceneGame()
 {	
+	CCLOG("stop music");
+	flag_music = false;
 	SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
 	CCScene *pScene = SceneGame::scene();	
+	CCDirector::sharedDirector()->replaceScene(pScene);		
+
+}
+
+void Inicio::GotoSceneTileMap()
+{	
+	CCLOG("stop music");
+	flag_music = false;
+	SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
+	CCScene *pScene = TileMap::scene();	
 	CCDirector::sharedDirector()->replaceScene(pScene);		
 
 }
@@ -193,27 +229,129 @@ void Inicio::Salir()
 }
 
 void Inicio::ActiveMenu()  
-{
-	UILayer* myView = (UILayer*) this->getChildByTag(1000);
-	UIButton* btn1 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Jugar"));
-	btn1->setEnabled(true);
-	btn1->setVisible(true);
-	UIButton* btn2 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Facebook"));
-	btn2->setEnabled(true);
-	btn2->setVisible(true);	
-	UIButton* btn3 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Tienda"));
-	btn3->setEnabled(true);
-	btn3->setVisible(true);			
-	UIButton* btn4 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Salir"));
-	btn4->setEnabled(true);
-	btn4->setVisible(true);		
-	imageLogo->setEnabled(false);
-	imageLogo->setVisible(false);
-	imageLogo->setTouchEnabled(false);	
+{	
 	imageMenu->setEnabled(true);
 	imageMenu->setVisible(true);
 	imageMenu->setTouchEnabled(true);	
 
-	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("intro.mp3",true);
+	setLogo(false);	
+	setBotonera(true);
+	setAjustes(true);
 	
+	CCLOG("dont start music");
+	flag_music = false;
+	//SimpleAudioEngine::sharedEngine()->playBackgroundMusic("intro.mp3",true);
+	UILayer* myView = (UILayer*) this->getChildByTag(1000);
+	UIImageView* imageNoSound = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_NoSound"));
+	imageNoSound->setEnabled(true);					
+	
+}
+
+void Inicio::setLogo (bool value)
+{	
+	imageLogo->setEnabled(value);
+	imageLogo->setVisible(value);
+	imageLogo->setTouchEnabled(value);
+}
+
+void Inicio::setBotonera(bool value)
+{
+	UILayer* myView = (UILayer*) this->getChildByTag(1000);
+	UIButton* btn1 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Jugar"));
+	btn1->setEnabled(value);btn1->setVisible(value);
+	UIButton* btn2 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Facebook"));
+	btn2->setEnabled(value);btn2->setVisible(value);
+	UIButton* btn3 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Tienda"));
+	btn3->setEnabled(value);btn3->setVisible(value);	
+	UIButton* btn4 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Rankings"));
+	btn4->setEnabled(value);btn4->setVisible(value);	
+	UIButton* btn5 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Salir"));
+	btn5->setEnabled(value);	btn5->setVisible(value);		
+	
+}
+
+void Inicio::setAjustes(bool value)
+{
+	UILayer* myView = (UILayer*) this->getChildByTag(1000);
+	UIButton* btn1 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Setting"));
+	btn1->setEnabled(value);btn1->setVisible(value);
+	btn1->setTouchEnabled(value);
+	UIButton* btn2 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Gift"));
+	btn2->setEnabled(value);btn2->setVisible(value);
+	btn2->setTouchEnabled(value);
+	UIButton* btn3 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Sound"));
+	btn3->setEnabled(value);btn3->setVisible(value);	
+	btn3->setTouchEnabled(value);
+	UIImageView* imageNoGift = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_NoGift"));
+	imageNoGift->setEnabled(value);
+	imageNoGift->setVisible(value);	
+	UIImageView* imageNoSound = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_NoSound"));
+	imageNoSound->setEnabled(value);	
+	imageNoSound->setVisible(value);
+	UIImageView *imageArco = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_Arco"));
+	imageArco->setEnabled(value); imageArco->setVisible(value);
+	
+}
+
+void Inicio::FadeOutAjustes()
+{
+	UILayer* myView = (UILayer*) this->getChildByTag(1000);
+	UIButton* btn7 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Tienda"));	
+	UIButton* btn8 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Setting"));
+	UIButton* btn9 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Gift"));
+	UIButton* btn10 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Sound"));
+	UIImageView *imageArco = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_Arco"));
+
+	CCActionInterval *seqb7 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.3f), NULL); 
+	CCActionInterval *seqb8 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.3f), NULL); 
+	CCActionInterval *seqb9 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.3f), NULL); 		
+	CCActionInterval *seqb10 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.3f), NULL); 	
+	CCActionInterval *seqi1 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.3f), NULL); 	
+
+	btn7->runAction(seqb7);
+	btn8->runAction(seqb8);
+	btn9->runAction(seqb9);
+	btn10->runAction(seqb10);
+	imageArco->runAction(seqi1);
+}
+
+void Inicio::FadeOutBotonera()
+{
+	CCActionInterval *seqa1 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.5f), NULL); 		
+	imageMenu->runAction(seqa1);
+	UILayer* myView = (UILayer*) this->getChildByTag(1000);
+	UIButton* btn1 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Jugar"));
+	UIButton* btn2 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Facebook"));
+	UIButton* btn3 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Tienda"));
+	UIButton* btn4 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Salir"));
+	UIButton* btn5 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Rankings"));
+	//UIPanel *panel1 = dynamic_cast <UIPanel*>(myView->getWidgetByName("Panel_Botonera"));
+	CCActionInterval *seqb1 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.3f), NULL); 
+	CCActionInterval *seqb2 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.3f), NULL); 
+	CCActionInterval *seqb3 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.3f), NULL); 		
+	CCActionInterval *seqb4 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.3f), NULL); 
+	CCActionInterval *seqb5 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.3f), NULL); 								
+	//CCActionInterval *seqp1 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.5f), NULL); 								
+	btn1->runAction(seqb1);
+	btn2->runAction(seqb2);
+	btn3->runAction(seqb3);
+	btn4->runAction(seqb4);
+	btn5->runAction(seqb5);	
+	//panel1->runAction(seqp1);
+	//panel1->setVisible(false);
+	UILabelBMFont *label_jugar = dynamic_cast <UILabelBMFont*>(myView->getWidgetByName("Label_Jugar")); 
+	UILabelBMFont *label_facebook = dynamic_cast <UILabelBMFont*>(myView->getWidgetByName("Label_Facebook"));
+	UILabelBMFont *label_tienda = dynamic_cast <UILabelBMFont*>(myView->getWidgetByName("Label_Tienda"));
+	UILabelBMFont *label_rankings = dynamic_cast <UILabelBMFont*>(myView->getWidgetByName("Label_Rankings"));
+	UIImageView* image_facebook = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_10"));
+	CCActionInterval *seqc1 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.3f), NULL); 					
+	CCActionInterval *seqc2 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.3f), NULL); 					
+	CCActionInterval *seqc3 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.3f), NULL); 	
+	CCActionInterval *seqc4 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.3f), NULL); 	
+	CCActionInterval *seqc5 = (CCActionInterval*)CCSequence::create(CCFadeOut::create(0.3f), NULL); 	
+	label_jugar->runAction(seqc1);
+	label_facebook->runAction(seqc2);
+	label_tienda->runAction(seqc3);	
+	label_rankings->runAction(seqc4);	
+	image_facebook->runAction(seqc5);		
 }
