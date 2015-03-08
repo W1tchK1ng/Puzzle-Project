@@ -25,10 +25,13 @@ public:
 	void ButtonUpdate_Settings(CCObject* pSender, cocos2d::gui::TouchEventType type);	
 	void ShowLogo(bool value);	
 	void ShowMainMenu(bool value);
-	void ShowSettings(bool value);	
+	void ShowSettings(bool value1, bool value2);	
 	void FadeOutSettings();
 	void FadeOutMainMenu();	
 	bool flag_music;
+	cocos2d::CCSequence *create_button_animation1();
+	cocos2d::CCSequence *create_button_animation2();
+	cocos2d::CCSequence *create_button_animation3();
 
     // implement the "static node()" method manually
     CREATE_FUNC(Inicio);

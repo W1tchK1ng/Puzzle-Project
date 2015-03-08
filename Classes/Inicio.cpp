@@ -86,11 +86,18 @@ bool Inicio::init()
 	btn_mm2->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate_MainMenu));  
 	btn_mm3->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate_MainMenu));  	
 	btn_mm4->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate_MainMenu));	
-	btn_mm5->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate_MainMenu));	
+	btn_mm5->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate_MainMenu));
+
+	btn_mm1->runAction(CCRepeatForever::create(create_button_animation1()));
+	btn_mm2->runAction(CCRepeatForever::create(create_button_animation1()));
+	btn_mm3->runAction(CCRepeatForever::create(create_button_animation1()));
+	btn_mm4->runAction(CCRepeatForever::create(create_button_animation1()));
+	btn_mm5->runAction(CCRepeatForever::create(create_button_animation1()));
+	
 	
 	// Load Settings Widget //
 	UIWidget* widget_settings;			
-	widget_settings = GUIReader::shareReader()->widgetFromJsonFile("puzzle-settings.json");		
+	widget_settings = GUIReader::shareReader()->widgetFromJsonFile("puzzle_settings.json");		
 	myView->addWidget(widget_settings);
 	// Settings Buttons & Images //	
 	UIButton* btn_s1 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Setting"));
@@ -101,23 +108,70 @@ bool Inicio::init()
 	btn_s3->setEnabled(false);btn_s3->setVisible(false);
 	UIImageView *imageArc = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_Arco"));
 	imageArc->setEnabled(false); imageArc->setVisible(false);
+	imageArc->setScale(0);
+	UIImageView* imageNoSound = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_NoSound"));
+	imageNoSound->setEnabled(false);
+	imageNoSound->setVisible(false);
+	//btn_s2->setPosition(ccp(-150,-150));
+	//btn_s3->setPosition(ccp(-150,-150));
 	btn_s1->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate_Settings));
 	btn_s2->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate_Settings));  
 	btn_s3->addTouchEventListener(this, toucheventselector(Inicio::ButtonUpdate_Settings));	
 
+	btn_s1->runAction(CCRepeatForever::create(create_button_animation1()));
+	btn_s2->runAction(CCRepeatForever::create(create_button_animation1()));
+	btn_s3->runAction(CCRepeatForever::create(create_button_animation1()));
+
 	// Load Music
 	CCLOG("preload music");
-	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("intro.mp3");	
-	UIImageView* imageNoSound = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_NoSound"));
-	imageNoSound->setEnabled(false);
-	imageNoSound->setVisible(false);
-
+	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("intro.mp3");		
+	
 	// Primero se muestra el Logo y luego se Activa el Menu
 	CCActionInterval *seq1 = (CCActionInterval*)CCSequence::create(CCDelayTime::create(0.5f), CCCallFunc::create(this, callfunc_selector(Inicio::ActiveMainMenu)), NULL); 		
 	this->runAction(seq1);	
 
 	
     return true;
+}
+
+cocos2d::CCSequence* Inicio::create_button_animation1()
+{	
+	CCScaleTo *scaleHorDown1 = CCScaleTo::create(15/30.f,0.95f,1);
+	CCEaseSineInOut *scaleHorBouncing1 = CCEaseSineInOut::create(scaleHorDown1);
+	CCScaleTo *scaleVerDown1 = CCScaleTo::create(15/30.f,1, 0.95f);
+	CCEaseSineInOut *scaleVerBouncing1 = CCEaseSineInOut::create(scaleVerDown1);
+	CCSequence *shrink1 = CCSequence::create(scaleHorBouncing1,scaleVerBouncing1, NULL);	
+	//CCScaleTo *swell1 = CCScaleTo::create(10/30.f,1);
+	//CCEaseSineInOut *swellEase1 = CCEaseSineInOut::create(swell1);			
+	return CCSequence::create(shrink1, NULL);
+}
+
+cocos2d::CCSequence* Inicio::create_button_animation2()
+{	
+	CCScaleTo *scaleHorDown1 = CCScaleTo::create(5/30.f,0.75f,1.0f);
+	CCEaseBounceIn *scaleHorBouncing1 = CCEaseBounceIn::create(scaleHorDown1);
+	CCScaleTo *scaleVerDown1 = CCScaleTo::create(5/30.f,1.0f, 0.65f);
+	CCEaseBounceInOut *scaleVerBouncing1 = CCEaseBounceInOut::create(scaleVerDown1);
+	CCSequence *shrink1 = CCSequence::create(scaleHorBouncing1,scaleVerBouncing1, NULL);
+	CCScaleTo *swell1 = CCScaleTo::create(15/30.f,1.10f);
+	CCEaseElasticOut *swellEase1 = CCEaseElasticOut::create(swell1);
+	CCScaleTo *resetScale1 = CCScaleTo::create(5/30.f, 1.0f);
+	CCEaseInOut *resetScaleBouncing1 = CCEaseInOut::create(resetScale1, 1);		
+	return CCSequence::create(shrink1, swellEase1, resetScaleBouncing1, NULL);
+}
+
+cocos2d::CCSequence* Inicio::create_button_animation3()
+{	
+	CCScaleTo *scaleHorDown1 = CCScaleTo::create(5/30.f,0.75f,1.0f);
+	CCEaseBounceIn *scaleHorBouncing1 = CCEaseBounceIn::create(scaleHorDown1);
+	CCScaleTo *scaleVerDown1 = CCScaleTo::create(5/30.f,1.0f, 0.65f);
+	CCEaseBounceInOut *scaleVerBouncing1 = CCEaseBounceInOut::create(scaleVerDown1);
+	CCSequence *shrink1 = CCSequence::create(scaleHorBouncing1,scaleVerBouncing1, NULL);
+	CCScaleTo *swell1 = CCScaleTo::create(15/30.f,1.10f);
+	CCEaseElasticOut *swellEase1 = CCEaseElasticOut::create(swell1);
+	CCScaleTo *resetScale1 = CCScaleTo::create(5/30.f, 1.0f);
+	CCEaseInOut *resetScaleBouncing1 = CCEaseInOut::create(resetScale1, 1);		
+	return CCSequence::create(shrink1, swellEase1, resetScaleBouncing1, NULL);
 }
 
 void Inicio::ButtonUpdate_MainMenu(CCObject* pSender, cocos2d::gui::TouchEventType type)
@@ -131,6 +185,13 @@ CCLOG("Button Name: %s", btn->getName());
 		{
 			case TOUCH_EVENT_BEGAN:
 				CCLOG("Button BEGAN");
+				
+				if (std::strcmp(btn->getName(), "Button_Jugar")==0)
+					{
+						//btn->stopAllActions();
+						//CCScaleTo *scale1 = CCScaleTo::create(2/30.f,0.75f,0.75f);						
+						//btn->runAction(CCSequence::create(scale1, NULL));
+					}
 				break;
             
 			case TOUCH_EVENT_MOVED:
@@ -184,6 +245,14 @@ void Inicio::ButtonUpdate_Settings(CCObject* pSender, cocos2d::gui::TouchEventTy
 {
 
 UIButton* btn = dynamic_cast <UIButton*>(pSender);
+UILayer* myView = (UILayer*) this->getChildByTag(1000);
+UIImageView *imageArc = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_Arco"));	
+UIButton* btn_s2 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Gift"));
+UIButton* btn_s3 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Sound"));
+UIImageView* imageNoSound = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_NoSound"));
+UIImageView* imageNoGift = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_NoGift"));
+UILabelBMFont *labelSound = dynamic_cast <UILabelBMFont*>(myView->getWidgetByName("Label_Sound"));
+UILabelBMFont *labelGift = dynamic_cast <UILabelBMFont*>(myView->getWidgetByName("Label_Gift"));
 
 CCLOG("Button Name: %s", btn->getName());
 
@@ -200,7 +269,63 @@ CCLOG("Button Name: %s", btn->getName());
 			case TOUCH_EVENT_ENDED:		
 
 				CCLOG("Button ENDED");
+				if (std::strcmp(btn->getName(), "Button_Setting")==0) 
+					{					
+						if (imageArc->getScaleX() == 0)
+						{
+						btn_s2->stopAllActions();
+						btn_s3->stopAllActions();						
+						imageArc->setVisible(true);	imageArc->setEnabled(true);
+						btn_s2->setEnabled(true);	btn_s2->setVisible(true);
+						btn_s2->setScale(0);
+						btn_s3->setEnabled(true);	btn_s3->setVisible(true);						
+						btn_s3->setScale(0);
+						CCScaleTo *scale1 = CCScaleTo::create(5/30.f,2,2);						
+						imageArc->runAction(CCSequence::create(scale1, NULL));
+						CCDelayTime *delay1 = CCDelayTime::create(5/30.f);						
+						CCDelayTime *delay2 = CCDelayTime::create(5/30.f);						
+						CCFadeIn *fadeIn1 = CCFadeIn::create(1/30);
+						CCFadeIn *fadeIn2 = CCFadeIn::create(1/30);
+						CCScaleTo *scaleA = CCScaleTo::create(5/30.f, 1,1);						
+						CCScaleTo *scaleB = CCScaleTo::create(5/30.f, 1,1);						
+						//btn_s2->setEnabled(true);btn_s2->setVisible(true);
+						btn_s2->setTouchEnabled(true);
+						//btn_s3->setEnabled(true);btn_s3->setVisible(true);
+						btn_s3->setTouchEnabled(true);
+						btn_s2->runAction(CCSequence::create(delay1, scaleA, fadeIn1, NULL));
+						btn_s3->runAction(CCSequence::create(delay2, scaleB, fadeIn2, NULL));
+						imageNoSound->setVisible(!flag_music);
+						imageNoGift->setVisible(true);
+						labelGift->setVisible(true);
+						labelSound->setVisible(true);
+						}
+						else
+						{
+						btn_s2->stopAllActions();
+						btn_s3->stopAllActions();						
+						CCScaleTo *scale1 = CCScaleTo::create(5/30.f,0,0);						
+						imageArc->runAction(CCSequence::create(scale1, NULL));						
+						CCDelayTime *delay1 = CCDelayTime::create(5/30.f);						
+						CCDelayTime *delay2 = CCDelayTime::create(5/30.f);						
+						CCScaleTo *scaleA = CCScaleTo::create(5/30.f, 0,0);						
+						CCScaleTo *scaleB = CCScaleTo::create(5/30.f, 0,0);
+						CCFadeOut *fadeOut1 = CCFadeOut::create(5/30);
+						CCFadeOut *fadeOut2 = CCFadeOut::create(5/30);					
+						//btn_s2->setEnabled(false);btn_s2->setVisible(false);						
+						btn_s3->setTouchEnabled(false);
+						//btn_s3->setEnabled(false);btn_s3->setVisible(false);
+						btn_s3->setTouchEnabled(false);
+						btn_s2->runAction(CCSequence::create(delay1, scaleA, fadeOut1, NULL));
+						btn_s3->runAction(CCSequence::create(delay2, scaleB, fadeOut2, NULL));	
+						imageNoSound->setVisible(false);
+						imageNoGift->setVisible(false);
+						labelGift->setVisible(false);
+						labelSound->setVisible(false);
+						}
 				
+					}
+
+
 				if (std::strcmp(btn->getName(), "Button_Sound")==0) 
 					{
 					UILayer* myView = (UILayer*) this->getChildByTag(1000);
@@ -208,12 +333,14 @@ CCLOG("Button Name: %s", btn->getName());
 					
 					if(flag_music == true) 
 						{imageNoSound->setEnabled(true);
+						 imageNoSound->setVisible(true);
 						 SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
 						 flag_music = false;
 						 CCLOG("pause music");
 						}
 					else{
 						imageNoSound->setEnabled(false);
+						imageNoSound->setVisible(false);
 						SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
 						if (!SimpleAudioEngine::sharedEngine()->isBackgroundMusicPlaying()) 
 								SimpleAudioEngine::sharedEngine()->playBackgroundMusic("intro.mp3",true);
@@ -277,7 +404,7 @@ void Inicio::ActiveMainMenu()
 
 	ShowLogo(false);	
 	ShowMainMenu(true);
-	ShowSettings(true);
+	ShowSettings(true, false);	
 	
 	CCLOG("dont start music");
 	flag_music = false;
@@ -311,26 +438,26 @@ void Inicio::ShowMainMenu(bool value)
 	
 }
 
-void Inicio::ShowSettings(bool value)
+void Inicio::ShowSettings(bool value1, bool value2)
 {
 	UILayer* myView = (UILayer*) this->getChildByTag(1000);
 	UIButton* btn1 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Setting"));
-	btn1->setEnabled(value);btn1->setVisible(value);
-	btn1->setTouchEnabled(value);
+	btn1->setEnabled(value1);btn1->setVisible(value1);
+	btn1->setTouchEnabled(value1);
 	UIButton* btn2 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Gift"));
-	btn2->setEnabled(value);btn2->setVisible(value);
-	btn2->setTouchEnabled(value);
+	btn2->setEnabled(value2);btn2->setVisible(value2);
+	btn2->setTouchEnabled(value2);
 	UIButton* btn3 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Sound"));
-	btn3->setEnabled(value);btn3->setVisible(value);	
-	btn3->setTouchEnabled(value);
+	btn3->setEnabled(value2);btn3->setVisible(value2);	
+	btn3->setTouchEnabled(value2);
 	UIImageView* imageNoGift = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_NoGift"));
-	imageNoGift->setEnabled(value);
-	imageNoGift->setVisible(value);	
+	imageNoGift->setEnabled(value2);
+	imageNoGift->setVisible(value2);	
 	UIImageView* imageNoSound = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_NoSound"));
-	imageNoSound->setEnabled(value);	
-	imageNoSound->setVisible(value);
+	imageNoSound->setEnabled(value2);	
+	imageNoSound->setVisible(value2);
 	UIImageView *imageArco = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_Arco"));
-	imageArco->setEnabled(value); imageArco->setVisible(value);
+	imageArco->setEnabled(value2); imageArco->setVisible(value2);
 	
 }
 
