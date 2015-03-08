@@ -19,11 +19,16 @@ public:
     
     // a selector callback	
 	void GotoSceneGame();
+	void MovePlayerToLevel(int level);
+	void PresentNextLevel();
 	void update(float delta);
 	double GetFloatPrecision(double value, double precision);
 	void ButtonUpdate(CCObject* pSender, cocos2d::gui::TouchEventType type);		
 	cocos2d::CCPoint old_position;
 	cocos2d::CCPoint new_position;
+
+	bool llego;
+	int next_level;
 	
     // implement the "static node()" method manually
     CREATE_FUNC(TileMap);

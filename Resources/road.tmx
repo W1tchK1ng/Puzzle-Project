@@ -1,11 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="128" tilewidth="66" tileheight="66" nextobjectid="1">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="128" tilewidth="66" tileheight="66" nextobjectid="142">
  <tileset firstgid="1" name="spritesheet" tilewidth="66" tileheight="66" spacing="2" margin="2">
   <image source="spritesheet.png" width="640" height="800"/>
  </tileset>
+ <tileset firstgid="100" name="Sprites" tilewidth="40" tileheight="66">
+  <tile id="0">
+   <image width="40" height="66" source="alienGreen.png"/>
+  </tile>
+ </tileset>
  <layer name="Capa de Patrones 1" width="32" height="128">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+2YsWrDMBCG3akZu3TJZAIdWrqEZGihdCh5gth5/1epBRYRh0463Um2Cb/hG0pjfXdnWdK563DhWu96UwI//Fvza8Z4FL92jBp+yxhWv/Z+K1vwr+WGHwAAAAAAAAAAAAAAAAAAADwa+4DDzPOK/mFBfyz3p4ld8Delhdv7r3PunNtzqeymzz7nd7xXdHvGhv6UN6zBy8RrZb/U7bgJayD1S9x7MrarQZ+pg8Qvdcdi8OuAxv9NfquNITUXlvCPiRg4/8/Ep8FPY+DWBM5vyT0WA7cmLuXn9gOp31L/1DvQyh/ex+V+ZNxafyy/1F5Y8u6lYuDWljGT+6/CT2Og/xuEdU+5c34O5+sDtG6NX3LmkbodXxN/hbnTfJ3vFCB1hzGcCDSm2Bw7Kn0S6HOJuVt43X507u570rCgW5P3xxwvh8Ufm+t0Lcu9P5Jzl695WHcP9V9IfvT3Gj+Xg7S/aeV3SM/3HJLeK+VPnelq1SA3h67GGFL+2Pmz9lzQ7P8xnH9Y0a99BrX8vgbXFf2+1/RYe2/N+ad0Trby5749pfzS9Zsj12+H0D3jbMi5NPcW1NiXtF5r7rleJsYt8PZKt7SXChkreGNuqd/q5dwSf605pvXXeL9Ke3gu99JxNN+swnl+mP2abyCae/yZIuyrdwVjWb5X9V28j2/pTj3/1l6wDf4Bm6+CkwBAAAA=
+   H4sIAAAAAAAAC+2aPU4DMRCFl4qUNDRUUaQUIJooKUBCFCgnSDZw/5uwK8XCGnns+bVXDsWr4uSbN/aOx85uh2HYAm2Eup/0QxwLmVZ86lhr/qUxP/g/32j+A3+88flvxT934l/KHg34UraVfwv+pUHuuf49+ZT648HnPH895p9Tf3v0z6k/nv4p/V+P+Q/8U2M+pf9bav3TxkDZf3JsC77Gu4av7T+1c0/178U/Mfkwhtr+OfwnoNQYbv+t4WNxePAxNsan9J+e/Nb+qfcvPfiHMXDO/1781v6lfCwOLp96/+TFl85/bh5q5f99gXxu/in9rye/tX/N/WNN/1586v7byv8zwtbyqf2XF596/vfie+S/xI751POPFz/4L9U/b35r/6X6Z7n+4Nja/lP8Uv/jza/5/Kf4pfNH7+v/+8b911z/S/K/lP2nFZ96/9ar/x77L04MXv1viR/G3E1aNeJz7p69/Lfiz+L89+i1/h4mPTbMv0f95/BDDtaFPHjlP6hUB6zrL5YHLAc1+GMmBoz/MelVwYcxYDUB42u8p2LAamItPrYfUPma/OeeAS9+/D3M+w5hW/QepXm3rD1YbRkL3j8FfBgD/Cw+70jZJT6mmbeOJGVL+JSeh8qe9Tbpi+kd+p15+0hUdhzDHgjGlFpjOyGPIjgvKbYHd96PDsPfnnSuyJb4frnGi0nDT611WMtKz0+u9sGcx3kPgvwj8AfHS/iYB8m7NZb8WdT+HtNRyc/1dFY5KK2hkzKGHD/Vf1qvBcn+nxL3PQNrvnQOrPghB5z/2q354awZ5HX2psjj7pEjzd0TtX5j4rz3B/eMg8Iz17uHLPYlKVfrvXSWSekScddCNvUsFWs04KbYVL6Wi7EpfKs1JuVbPF/cMzzmnfs7kjureJ1vrnzJHYjkO6GniM/VK8Zvae6r1kP6HO/Jzs2/N/dfy9Avi6r2fQBAAAA=
   </data>
  </layer>
+ <objectgroup name="Capa de Objetos">
+  <object id="72" name="Nivel 1" x="330" y="7986" width="66" height="66"/>
+  <object id="77" name="Nivel 2" x="462" y="7920" width="66" height="66"/>
+  <object id="79" name="Nivel 3" x="528" y="7788" width="66" height="66"/>
+  <object id="80" name="Nivel 4" x="594" y="7656" width="66" height="66"/>
+  <object id="81" name="Nivel 5" x="726" y="7590" width="66" height="66"/>
+  <object id="82" name="Nivel 6" x="858" y="7524" width="66" height="66"/>
+  <object id="87" name="Nivel 7" x="990" y="7458" width="66" height="66"/>
+  <object id="88" name="Nivel 8" x="1122" y="7194" width="66" height="66"/>
+  <object id="89" name="Nivel 9" x="990" y="7062" width="66" height="66"/>
+  <object id="92" name="Nivel 10" x="792" y="6864" width="66" height="66"/>
+  <object id="93" name="Nivel 11" x="726" y="6798" width="66" height="66"/>
+  <object id="94" name="Nivel 12" x="660" y="6732" width="66" height="66"/>
+  <object id="95" name="Nivel 13" x="594" y="6600" width="66" height="66"/>
+  <object id="96" name="Nivel 14" x="594" y="6468" width="66" height="66"/>
+  <object id="97" name="Inicio" gid="100" x="132" y="8118"/>
+  <object id="98" name="Nivel 15" x="792" y="6204" width="66" height="66"/>
+  <object id="99" name="Nivel 16" x="924" y="6072" width="66" height="66"/>
+  <object id="100" name="Nivel 17" x="1254" y="5874" width="66" height="66"/>
+  <object id="101" name="Nivel 18" x="1320" y="5808" width="66" height="66"/>
+  <object id="102" name="Nivel 19" x="1452" y="5544" width="66" height="66"/>
+  <object id="103" name="Nivel 20" x="1386" y="5412" width="66" height="66"/>
+  <object id="104" name="Nivel 21" x="1188" y="5148" width="66" height="66"/>
+  <object id="105" name="Nivel 22" x="1122" y="5016" width="66" height="66"/>
+  <object id="106" name="Nivel 23" x="1122" y="4884" width="66" height="66"/>
+  <object id="107" name="Nivel 24" x="1188" y="4620" width="66" height="66"/>
+  <object id="108" name="Nivel 25" x="1188" y="4488" width="66" height="66"/>
+  <object id="109" name="Nivel 26" x="1188" y="4356" width="66" height="66"/>
+  <object id="110" name="Nivel 27" x="1320" y="4092" width="66" height="66"/>
+  <object id="111" name="Nivel 28" x="1320" y="3960" width="66" height="66"/>
+  <object id="113" name="Nivel 29" x="1320" y="3696" width="66" height="66"/>
+  <object id="114" name="Nivel 30" x="1320" y="3564" width="66" height="66"/>
+  <object id="115" name="Nivel 31" x="1188" y="3498" width="66" height="66"/>
+  <object id="116" name="Nivel 32" x="1188" y="3366" width="66" height="66"/>
+  <object id="118" name="Nivel 33" x="1320" y="3168" width="66" height="66"/>
+  <object id="119" name="Nivel 34" x="1320" y="3036" width="66" height="66"/>
+  <object id="120" name="Nivel 35" x="1320" y="2904" width="66" height="66"/>
+  <object id="121" name="Nivel 36" x="1320" y="2706" width="66" height="66"/>
+  <object id="122" name="Nivel 37" x="1320" y="2442" width="66" height="66"/>
+  <object id="123" name="Nivel 38" x="1320" y="2310" width="66" height="66"/>
+  <object id="124" name="Nivel 39" x="1320" y="2178" width="66" height="66"/>
+  <object id="125" name="Nivel 40" x="1188" y="1914" width="66" height="66"/>
+  <object id="126" name="Nivel 41" x="1188" y="1782" width="66" height="66"/>
+  <object id="127" name="Nivel 42" x="1320" y="1650" width="66" height="66"/>
+  <object id="128" name="Nivel 43" x="1320" y="1584" width="66" height="66"/>
+  <object id="131" name="Nivel 44" x="1320" y="1452" width="66" height="66"/>
+  <object id="132" name="Nivel 45" x="1320" y="1320" width="66" height="66"/>
+  <object id="133" name="Nivel 46" x="1188" y="1254" width="66" height="66"/>
+  <object id="134" name="Nivel 47" x="1188" y="1122" width="66" height="66"/>
+  <object id="135" name="Nivel 48" x="1320" y="924" width="66" height="66"/>
+  <object id="136" name="Nivel 49" x="1320" y="792" width="66" height="66"/>
+  <object id="137" name="Nivel 50" x="1188" y="660" width="66" height="66"/>
+  <object id="138" name="Nivel 51" x="1188" y="396" width="66" height="66"/>
+  <object id="139" name="Nivel 52" x="1320" y="330" width="66" height="66"/>
+  <object id="140" name="Nivel 53" x="1188" y="132" width="66" height="66"/>
+  <object id="141" name="Nivel 54" x="1320" y="0" width="66" height="66"/>
+ </objectgroup>
 </map>

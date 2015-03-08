@@ -64,8 +64,8 @@ bool TileMap::init()
 	CCSize map_size = map->getMapSize();
 	//float tiles_x = 16;
 	//float tiles_y = 64;
-	float zoom1 = 0.5f;
-	float zoom2 = 0.5f;
+	float zoom1 = 1;
+	float zoom2 = 1;
 
 	sv->setInnerContainerSize(CCSize(tile_size.width*map_size.width*zoom2, tile_size.height*map_size.height*zoom2));
 	sv->scrollToBottom(1, true);
@@ -87,14 +87,26 @@ bool TileMap::init()
     }
 	map->setAnchorPoint(ccp(0, 0));	
 	map->setScale(zoom1);
-	
-	//sv->setVisible(false);		
+
+	CCArray *ObjectGroups = map->getObjectGroups();	
+	CCTMXObjectGroup *objects = (CCTMXObjectGroup *) ObjectGroups->objectAtIndex(0);
+	CCDictionary *spawnPoint = objects->objectNamed("Inicio"); 
+	int x = ((CCString)*spawnPoint->valueForKey("x")).intValue();
+	int y = ((CCString)*spawnPoint->valueForKey("y")).intValue(); 
+	CCSprite *player = CCSprite::create("alienGreen.png");
+	player->setPosition(ccp(x,y)); 
+	player->setAnchorPoint(ccp(0,0));
+	map->addChild(player,1, 50);		
 
 	schedule( schedule_selector( TileMap::update ) , 1.0f / 60 );
 
 	UIButton* btn1 = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Salir"));
 	btn1->addTouchEventListener(this, toucheventselector(TileMap::ButtonUpdate));
 	
+	llego = false;
+	next_level = 1;
+	MovePlayerToLevel(next_level);
+
     return true;
 }
 
@@ -121,6 +133,8 @@ void TileMap::update(float delta)
 		map->setPosition(new_position);		
 		old_position = new_position;
 		}
+
+	if (llego == true) {MovePlayerToLevel(next_level); llego = false;}
 			
 	//CCLOG("x: %f y: %f", new_position.x, new_position.y);
 }
@@ -164,4 +178,33 @@ CCLOG("Button Name: %s", btn->getName());
 				break;
 
 		}
+}
+
+void TileMap::MovePlayerToLevel(int level)
+	{
+		CCTMXTiledMap* map = (CCTMXTiledMap*) this->getChildByTag(100); 
+		CCSprite *player = (CCSprite *) map->getChildByTag(50);
+		CCArray *ObjectGroups = map->getObjectGroups();	
+		CCTMXObjectGroup *objects = (CCTMXObjectGroup *) ObjectGroups->objectAtIndex(0);
+		
+		std::string level_number;
+		level_number.append("Nivel ");
+		const char *codigo = CCString::createWithFormat("%01d", level)->getCString();
+		level_number.append(codigo);
+
+		CCDictionary *spawnPoint = objects->objectNamed(level_number.c_str()); 
+		int x = ((CCString)*spawnPoint->valueForKey("x")).intValue();
+		int y = ((CCString)*spawnPoint->valueForKey("y")).intValue();
+
+		CCActionInterval *seq = (CCActionInterval*)CCSequence::create(CCDelayTime::create(1), CCMoveTo::create(2, ccp(x,y)), CCCallFunc::create(this, callfunc_selector(TileMap::PresentNextLevel)), NULL); 		
+		player->runAction(seq);
+
+	}
+
+void TileMap::PresentNextLevel()
+{
+	llego = true;
+	next_level++;
+	if (next_level > 50) next_level = 1;
+
 }

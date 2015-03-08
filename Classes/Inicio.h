@@ -20,17 +20,14 @@ public:
 	void Salir();	
 	void GotoSceneGame();
 	void GotoSceneTileMap();
-	void ActiveMenu();
-	void ButtonUpdate(CCObject* pSender, cocos2d::gui::TouchEventType type);		
-	
-	void setLogo(bool value);
-	
-	void setBotonera(bool value);
-	void setAjustes(bool value);
-	
-	void FadeOutAjustes();
-	void FadeOutBotonera();
-	
+	void ActiveMainMenu();
+	void ButtonUpdate_MainMenu(CCObject* pSender, cocos2d::gui::TouchEventType type);		
+	void ButtonUpdate_Settings(CCObject* pSender, cocos2d::gui::TouchEventType type);	
+	void ShowLogo(bool value);	
+	void ShowMainMenu(bool value);
+	void ShowSettings(bool value);	
+	void FadeOutSettings();
+	void FadeOutMainMenu();	
 	bool flag_music;
 
     // implement the "static node()" method manually
