@@ -3,6 +3,8 @@
 #include "cocos-ext.h"
 #include "Inicio.h"
 
+#define FIRSTOBJECTGID 100
+
 USING_NS_CC;
 using namespace cocos2d::extension;
 using namespace cocos2d::gui;
@@ -55,10 +57,15 @@ bool TileMap::init()
 	myView->addWidget(widget);	
 
 	UIScrollView* sv = dynamic_cast <UIScrollView*>(myView->getWidgetByName("ScrollView"));		
+	//sv->setBounceEnabled(true);
+	sv->setInertiaScrollEnabled(true);
 
 	//CCTMXTiledMap* map = CCTMXTiledMap::create("orthogonal-test2.tmx");
 	CCTMXTiledMap* map = CCTMXTiledMap::create("road.tmx");
 	this->addChild(map, 0, 100);	
+	
+	//CCTMXMapInfo *mapInfo = CCTMXMapInfo::formatWithTMXFile("road.tmx");
+	//CCTMXTilesetInfo *info = (CCTMXTilesetInfo*) mapInfo->getTilesets()->objectAtIndex(1);
 
 	CCSize tile_size = map->getTileSize();
 	CCSize map_size = map->getMapSize();
@@ -86,17 +93,33 @@ bool TileMap::init()
         child->getTexture()->setAntiAliasTexParameters();
     }
 	map->setAnchorPoint(ccp(0, 0));	
-	map->setScale(zoom1);
+	map->setScale(zoom1);	
 
-	CCArray *ObjectGroups = map->getObjectGroups();	
-	CCTMXObjectGroup *objects = (CCTMXObjectGroup *) ObjectGroups->objectAtIndex(0);
-	CCDictionary *spawnPoint = objects->objectNamed("Inicio"); 
-	int x = ((CCString)*spawnPoint->valueForKey("x")).intValue();
-	int y = ((CCString)*spawnPoint->valueForKey("y")).intValue(); 
-	CCSprite *player = CCSprite::create("alienGreen.png");
-	player->setPosition(ccp(x,y)); 
-	player->setAnchorPoint(ccp(0,0));
-	map->addChild(player,1, 50);		
+	CCArray *ObjectGroups = map->getObjectGroups();		
+	CCTMXObjectGroup *objects = (CCTMXObjectGroup *) ObjectGroups->objectAtIndex(0);			
+	CCArray *Todos = objects->getObjects();		
+	CCDictionary* spawnPointTodos = NULL;
+    CCObject* pObj = NULL;
+	int i = 50;
+	CCARRAY_FOREACH(Todos, pObj)
+	{
+	spawnPointTodos = (CCDictionary*)pObj;
+	int x = ((CCString)*spawnPointTodos->valueForKey("x")).intValue();
+	int y = ((CCString)*spawnPointTodos->valueForKey("y")).intValue(); 
+	int gid = ((CCString)*spawnPointTodos->valueForKey("gid")).intValue(); 	
+	if (gid > FIRSTOBJECTGID-1) 
+		{std::string filename;
+		 getSpriteNameGID(gid, &filename);
+		 CCSprite *player = CCSprite::create(filename.c_str());
+		 player->setPosition(ccp(x,y)); 
+		 player->setAnchorPoint(ccp(0,0));
+		 int zorder = 0;
+		 if (i == 50) zorder = 1;
+		 map->addChild(player,zorder, i);			 
+		 i++;
+		 }	
+	}
+	
 
 	schedule( schedule_selector( TileMap::update ) , 1.0f / 60 );
 
@@ -122,7 +145,7 @@ void TileMap::update(float delta)
 	CCTMXTiledMap* map = (cocos2d::CCTMXTiledMap*) this->getChildByTag(100);	
 	UILayer* myView = (UILayer*) this->getChildByTag(1000);	
 	UIScrollView* sv = dynamic_cast <UIScrollView*>(myView->getWidgetByName("ScrollView"));	
-	
+		
 	new_position = sv->getInnerContainer()->getPosition();
 	//if (new_position.y != 0) new_position.y = 0;
 	new_position.x = GetFloatPrecision(new_position.x, 0);
@@ -190,13 +213,15 @@ void TileMap::MovePlayerToLevel(int level)
 		std::string level_number;
 		level_number.append("Nivel ");
 		const char *codigo = CCString::createWithFormat("%01d", level)->getCString();
-		level_number.append(codigo);
-
+		level_number.append(codigo);		
 		CCDictionary *spawnPoint = objects->objectNamed(level_number.c_str()); 
 		int x = ((CCString)*spawnPoint->valueForKey("x")).intValue();
-		int y = ((CCString)*spawnPoint->valueForKey("y")).intValue();
-
-		CCActionInterval *seq = (CCActionInterval*)CCSequence::create(CCDelayTime::create(1), CCMoveTo::create(2, ccp(x,y)), CCCallFunc::create(this, callfunc_selector(TileMap::PresentNextLevel)), NULL); 		
+		int y = ((CCString)*spawnPoint->valueForKey("y")).intValue();	
+		CCPoint delta;
+		delta.x = x - player->getPositionX();
+		delta.y = y - player->getPositionY();
+		if (delta.x < 0) player->setFlipX(true); else player->setFlipX(false);
+		CCActionInterval *seq = (CCActionInterval*)CCSequence::create(CCDelayTime::create(0.25f), CCMoveBy::create(0.25f, delta), CCCallFunc::create(this, callfunc_selector(TileMap::PresentNextLevel)), NULL); 		
 		player->runAction(seq);
 
 	}
@@ -205,6 +230,15 @@ void TileMap::PresentNextLevel()
 {
 	llego = true;
 	next_level++;
-	if (next_level > 50) next_level = 1;
+	if (next_level > 55) next_level = 1;
 
 }
+
+void TileMap::getSpriteNameGID(int gid, std::string *file_string)
+	{		
+		int first_gid = FIRSTOBJECTGID;
+		file_string->append("gid");
+		const char *codigo = CCString::createWithFormat("%03d", gid-first_gid)->getCString();	
+		file_string->append(codigo);
+		file_string->append(".png");				
+	}

@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 #include "cocos-ext.h"
+#include "AnimatedButtons.h"
 
 class Inicio : public cocos2d::CCLayer
 {
@@ -17,28 +18,28 @@ public:
     static cocos2d::CCScene* scene();
     
     // a selector callback    
+	void update(float dt);
 	void Salir();	
 	void GotoSceneGame();
-	void GotoSceneTileMap();
+	void GotoSceneTileMap();	
 	void ActiveMainMenu();
 	void ButtonUpdate_MainMenu(CCObject* pSender, cocos2d::gui::TouchEventType type);		
 	void ButtonUpdate_Settings(CCObject* pSender, cocos2d::gui::TouchEventType type);	
 	void ShowLogo(bool value);	
 	void ShowMainMenu(bool value);
 	void ShowSettings(bool value1, bool value2);	
+	bool IsTouchOutsideButton(cocos2d::gui::UIButton* btn, cocos2d::gui::UIPanel* panelBotonera);
 	void FadeOutSettings();
 	void FadeOutMainMenu();	
 	bool flag_music;
-	cocos2d::CCSequence *create_button_animation1();
-	cocos2d::CCSequence *create_button_animation2();
-	cocos2d::CCSequence *create_button_animation3();
-
+	bool flag_sounds;
+	AnimatedButtons *Btn[10];
     // implement the "static node()" method manually
     CREATE_FUNC(Inicio);
 
 	cocos2d::gui::UIImageView* imageLogo;
-	cocos2d::gui::UIImageView* imageMenu;	
-	
+	cocos2d::gui::UIImageView* imageMenu;
+		
 	};
 
 #endif // __Inicio_SCENE_H__

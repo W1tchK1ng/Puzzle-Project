@@ -23,7 +23,8 @@ public:
 	void PresentNextLevel();
 	void update(float delta);
 	double GetFloatPrecision(double value, double precision);
-	void ButtonUpdate(CCObject* pSender, cocos2d::gui::TouchEventType type);		
+	void ButtonUpdate(CCObject* pSender, cocos2d::gui::TouchEventType type);	
+	void getSpriteNameGID(int gid, std::string *file_string);
 	cocos2d::CCPoint old_position;
 	cocos2d::CCPoint new_position;
 
