@@ -8,6 +8,7 @@
 //#endif
 
 #define MAXBUTTONS 8
+#define TIME_LIMIT 1
 
 USING_NS_CC;
 using namespace cocos2d::extension;
@@ -76,6 +77,8 @@ bool Inicio::init()
 	UILabelBMFont *lbls[MAXBUTTONS];
 	UIImageView *imgs[MAXBUTTONS];
 
+	UIPanel* Panel_MainMenu = dynamic_cast <UIPanel*>(myView->getWidgetByName("Panel_Botonera"));
+
 	// Main Menu Buttons//	
 	btns[0] = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Jugar"));	
 	btns[1] = dynamic_cast <UIButton*>(myView->getWidgetByName("Button_Facebook"));	
@@ -128,9 +131,8 @@ bool Inicio::init()
 	}	
 	
 	// Load Music
-	CCLOG("preload music");
-	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("intro.mp3");		
-	SimpleAudioEngine::sharedEngine()->preloadEffect("button-settings.wav"); 
+	LoadBackgroundMusic();
+	LoadSounds();
 	
 	// Primero se muestra el Logo y luego se Activa el Menu
 	CCActionInterval *seq1 = (CCActionInterval*)CCSequence::create(CCDelayTime::create(0.5f), CCCallFunc::create(this, callfunc_selector(Inicio::ActiveMainMenu)), NULL); 		
@@ -139,20 +141,19 @@ bool Inicio::init()
 	for (int i=0; i < MAXBUTTONS; i++)
 	{
 	Btn[i] = new AnimatedButtons;
-	Btn[i]->Init(btns[i], lbls[i], imgs[i]);
-	}
+	float panel_sx, panel_sy;
+	if (i < 5) {panel_sx = Panel_MainMenu->getScaleX(); panel_sy = Panel_MainMenu->getScaleY();}
+	else {panel_sx = Panel_Settings->getScaleX(); panel_sy = Panel_Settings->getScaleY();}
+	Btn[i]->Init(btns[i], lbls[i], imgs[i], panel_sx, panel_sy);
+	}	
 	
 	schedule( schedule_selector( SceneGame::update ) , GAME_REFRESH );
     return true;
 }
 
-bool Inicio::IsTouchOutsideButton(cocos2d::gui::UIButton* btn, cocos2d::gui::UIPanel* panelBotonera)
+bool Inicio::IsTouchOutsideButton(AnimatedButtons *btn, cocos2d::gui::UIPanel* panelBotonera)
 {
-	if (btn->getTouchMovePos().x < btn->getWorldPosition().x - btn->getContentSize().width/2*panelBotonera->getScaleX()) return true;
-	if (btn->getTouchMovePos().x > btn->getWorldPosition().x + btn->getContentSize().width/2*panelBotonera->getScaleX()) return true;
-	if (btn->getTouchMovePos().y < btn->getWorldPosition().y - btn->getContentSize().height/2*panelBotonera->getScaleY()) return true; 
-	if (btn->getTouchMovePos().y > btn->getWorldPosition().y + btn->getContentSize().height/2*panelBotonera->getScaleY()) return true;				
-	return false;
+	return btn->isPressedOutside(panelBotonera->getScaleX(), panelBotonera->getScaleY());
 }
 
 void Inicio::ButtonUpdate_MainMenu(CCObject* pSender, cocos2d::gui::TouchEventType type)
@@ -173,27 +174,20 @@ if (std::strcmp(btn->getName(), "Button_Rankings")==0) button = 4;
 		{
 			case TOUCH_EVENT_BEGAN:
 				CCLOG("Button BEGAN");
-				SimpleAudioEngine::sharedEngine()->playEffect("button-settings.wav");				
-				Btn[button]->Set(true, 1);									
+				PlaySoundTouch();				
+				Btn[button]->Began();				
 				break;
             
 			case TOUCH_EVENT_MOVED:
-				CCLOG("Button MOVED");						
-				if (IsTouchOutsideButton(btn, panelBotonera)) 
-					{
-					CCLOG("True");
-					if (Btn[button]->IsDown() == true)	Btn[button]->Set(false, 1);
-					}
-				else{
-					if (Btn[button]->IsDown() == false)	Btn[button]->Set(true, 1);					 
-					}			
+				CCLOG("Button MOVED");							
+				Btn[button]->Moved();			
 				break;
             
 			case TOUCH_EVENT_ENDED:		
 
 				CCLOG("Button ENDED");
-				Btn[button]->Set(false, 0);																
-
+				Btn[button]->Ended();
+				
 				if (std::strcmp(btn->getName(), "Button_Jugar")==0)
 					{
 					CCActionInterval *seq1 = (CCActionInterval*)CCSequence::create(CCDelayTime::create(0.5f), CCCallFunc::create(this, callfunc_selector(Inicio::FadeOutMainMenu)), NULL); 		
@@ -224,8 +218,7 @@ if (std::strcmp(btn->getName(), "Button_Rankings")==0) button = 4;
             
 			case TOUCH_EVENT_CANCELED:
 				CCLOG("Button CANCELED");								
-				Btn[button]->Set(false, 0);				
-				
+				Btn[button]->Canceled();
 				break;
             
 			default:
@@ -259,116 +252,77 @@ if (std::strcmp(btn->getName(), "Button_Sound")==0) button = 7;
 		{
 			case TOUCH_EVENT_BEGAN:
 				CCLOG("Button BEGAN");
-				SimpleAudioEngine::sharedEngine()->playEffect("button-settings.wav"); 
-				Btn[button]->Set(true, 1);									
-				break;
-            
-			case TOUCH_EVENT_MOVED:
-				CCLOG("Button MOVED");
-				if (IsTouchOutsideButton(btn, panelSettings)) 
-					{
-					CCLOG("True");
-					if (Btn[button]->IsDown() == true)	Btn[button]->Set(false, 1);
-					}
-				else{
-					if (Btn[button]->IsDown() == false)	Btn[button]->Set(true, 1);					 
-					}							
-				break;
-            
-			case TOUCH_EVENT_ENDED:		
-
-				CCLOG("Button ENDED");
-				Btn[button]->Set(false, 0);																
-
+				PlaySoundTouch();				
+				Btn[button]->Began();
+				
 				if (std::strcmp(btn->getName(), "Button_Setting")==0) 
-					{					
+					{	
 						if (imageArc->getScaleX() == 0)
 						{
 						ShowSettings(true, true);
 						CCScaleTo *scale1 = CCScaleTo::create(5/30.f,2,2);						
-						imageArc->runAction(CCSequence::create(scale1, NULL));						
-						/*btn_s2->stopAllActions();
-						btn_s3->stopAllActions();						
-						imageArc->setVisible(true);	imageArc->setEnabled(true);
-						btn_s2->setEnabled(true);	btn_s2->setVisible(true);
-						btn_s2->setScale(0);
-						btn_s3->setEnabled(true);	btn_s3->setVisible(true);						
-						btn_s3->setScale(0);
-						CCDelayTime *delay1 = CCDelayTime::create(5/30.f);						
-						CCDelayTime *delay2 = CCDelayTime::create(5/30.f);						
-						CCFadeIn *fadeIn1 = CCFadeIn::create(1/30);
-						CCFadeIn *fadeIn2 = CCFadeIn::create(1/30);
-						CCScaleTo *scaleA = CCScaleTo::create(5/30.f, 1,1);						
-						CCScaleTo *scaleB = CCScaleTo::create(5/30.f, 1,1);						
-						//btn_s2->setEnabled(true);btn_s2->setVisible(true);
-						btn_s2->setTouchEnabled(true);
-						//btn_s3->setEnabled(true);btn_s3->setVisible(true);
-						btn_s3->setTouchEnabled(true);
-						btn_s2->runAction(CCSequence::create(delay1, scaleA, fadeIn1, NULL));
-						btn_s3->runAction(CCSequence::create(delay2, scaleB, fadeIn2, NULL));
-						imageNoSound->setVisible(!flag_music);
-						imageNoMusic->setVisible(true);
-						labelMusic->setVisible(true);
-						labelSound->setVisible(true);*/
+						imageArc->runAction(CCSequence::create(scale1, NULL));					
 						}
+
 						if (imageArc->getScaleX() == 2)						
 						{
 						ShowSettings(true, false);
 						CCScaleTo *scale1 = CCScaleTo::create(5/30.f,0,0);						
-						imageArc->runAction(CCSequence::create(scale1, NULL));						
-						/*btn_s2->stopAllActions();
-						btn_s3->stopAllActions();						
-						CCScaleTo *scale1 = CCScaleTo::create(5/30.f,0,0);						
-						imageArc->runAction(CCSequence::create(scale1, NULL));						
-						CCDelayTime *delay1 = CCDelayTime::create(5/30.f);						
-						CCDelayTime *delay2 = CCDelayTime::create(5/30.f);						
-						CCScaleTo *scaleA = CCScaleTo::create(5/30.f, 0,0);						
-						CCScaleTo *scaleB = CCScaleTo::create(5/30.f, 0,0);
-						CCFadeOut *fadeOut1 = CCFadeOut::create(5/30);
-						CCFadeOut *fadeOut2 = CCFadeOut::create(5/30);					
-						//btn_s2->setEnabled(false);btn_s2->setVisible(false);						
-						btn_s3->setTouchEnabled(false);
-						//btn_s3->setEnabled(false);btn_s3->setVisible(false);
-						btn_s3->setTouchEnabled(false);
-						btn_s2->runAction(CCSequence::create(delay1, scaleA, fadeOut1, NULL));
-						btn_s3->runAction(CCSequence::create(delay2, scaleB, fadeOut2, NULL));	
-						imageNoSound->setVisible(false);
-						imageNoMusic->setVisible(false);
-						labelMusic->setVisible(false);
-						labelSound->setVisible(false);*/
+						imageArc->runAction(CCSequence::create(scale1, NULL));					
+					
 						}
 				
 					}
 
+				if (std::strcmp(btn->getName(), "Button_Music")==0) 
+					{
+					UILayer* myView = (UILayer*) this->getChildByTag(1000);
+					UIImageView* imageNoMusic = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_NoMusic"));
+					
+					if(flag_music == true) 
+						{imageNoMusic->setEnabled(true);
+						 imageNoMusic->setVisible(true);
+						 PauseBackgroundMusic();						 
+						}
+					else{
+						imageNoMusic->setEnabled(false);
+						imageNoMusic->setVisible(false);
+						PlayBackgroundMusic();						
+						}
+					}
 
 				if (std::strcmp(btn->getName(), "Button_Sound")==0) 
 					{
 					UILayer* myView = (UILayer*) this->getChildByTag(1000);
-					UIImageView* imageNoSound = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_NoSound"));
+					UIImageView* imageNoMusic = dynamic_cast <UIImageView*>(myView->getWidgetByName("Image_NoSound"));
 					
-					if(flag_music == true) 
-						{imageNoSound->setEnabled(true);
-						 imageNoSound->setVisible(true);
-						 SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
-						 flag_music = false;
-						 CCLOG("pause music");
+					if(flag_sounds == true) 
+						{
+						imageNoSound->setEnabled(true);
+						imageNoSound->setVisible(true);
+						PauseSounds();						 
 						}
 					else{
 						imageNoSound->setEnabled(false);
 						imageNoSound->setVisible(false);
-						SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
-						if (!SimpleAudioEngine::sharedEngine()->isBackgroundMusicPlaying()) 
-								SimpleAudioEngine::sharedEngine()->playBackgroundMusic("intro.mp3",true);
-						CCLOG("resume music");
-						flag_music = true;
+						ResumeSounds();	
+						PlaySoundTouch();				
 						}
-
-					}	
-
+					}
 				break;
             
-			case TOUCH_EVENT_CANCELED:	
-				Btn[button]->Set(false, 0);																
+			case TOUCH_EVENT_MOVED:
+				CCLOG("Button MOVED");							
+				Btn[button]->Moved();			
+				break;
+            
+			case TOUCH_EVENT_ENDED:	
+				CCLOG("Button ENDED");				
+				Btn[button]->Ended();
+				break;
+            
+			case TOUCH_EVENT_CANCELED:					
+				Btn[button]->Canceled();
 				break;
             
 			default:
@@ -380,9 +334,7 @@ if (std::strcmp(btn->getName(), "Button_Sound")==0) button = 7;
 
 void Inicio::GotoSceneGame()
 {	
-	CCLOG("stop music");
-	flag_music = false;
-	SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
+	StopBackgroundMusic();
 	CCLOG("Goto SceneGame");
 	CCScene *pScene = SceneGame::scene();	
 	CCDirector::sharedDirector()->replaceScene(pScene);
@@ -390,9 +342,7 @@ void Inicio::GotoSceneGame()
 
 void Inicio::GotoSceneTileMap()
 {		
-	CCLOG("stop music");
-	flag_music = false;
-	SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
+	StopBackgroundMusic();
 	CCLOG("Goto TileMap Scene");
 	CCScene *pScene = TileMap::scene();	
 	CCDirector::sharedDirector()->replaceScene(pScene);
@@ -458,9 +408,9 @@ void Inicio::ShowSettings(bool value1, bool value2)
 	{
 	Btn[5]->Show();
 	Btn[6]->Show();	
-	Btn[6]->UIImg->setVisible(!flag_sounds);
+	Btn[6]->UIImg->setVisible(!flag_music);
 	Btn[7]->Show();
-	Btn[7]->UIImg->setVisible(!flag_music);
+	Btn[7]->UIImg->setVisible(!flag_sounds);
 	if (value2 == false)
 		{		
 		Btn[6]->Hide();
@@ -505,4 +455,83 @@ void Inicio::update(float dt)
 	Btn[5]->Update(dt);
 	Btn[6]->Update(dt);
 	Btn[7]->Update(dt);
+
+	int contar = 0;
+	for (int i=0; i < MAXBUTTONS; i++)
+		{
+			if (Btn[i]->isPressed() == false) contar++;
+		}
+	if (contar == 8) {SetTouchEnabledSettings(true); SetTouchEnabledMainMenu(true);}
+	else {SetTouchEnabledSettings(false); SetTouchEnabledMainMenu(false);}
+
+}
+
+void Inicio::SetTouchEnabledSettings(bool value)
+{
+	Btn[0]->SetTouchable(value);
+	Btn[1]->SetTouchable(value);
+	Btn[2]->SetTouchable(value);
+	Btn[3]->SetTouchable(value);
+	Btn[4]->SetTouchable(value);	
+
+}
+void Inicio::SetTouchEnabledMainMenu(bool value)
+{
+	Btn[5]->SetTouchable(value);
+	Btn[6]->SetTouchable(value);
+	Btn[7]->SetTouchable(value);		
+}
+void Inicio::LoadBackgroundMusic()
+{	CCLOG("preload background music");
+	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("intro.mp3");		
+}
+
+void Inicio::PlayBackgroundMusic()
+{
+	if (SimpleAudioEngine::sharedEngine()->isBackgroundMusicPlaying()) 
+	{
+	SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();	
+	CCLOG("resume music");	
+	}
+	
+	if (!SimpleAudioEngine::sharedEngine()->isBackgroundMusicPlaying()) 
+		{
+		SimpleAudioEngine::sharedEngine()->playBackgroundMusic("intro.mp3",true);
+		CCLOG("play music");
+		}
+						
+	flag_music = true;
+}
+
+void Inicio::PauseBackgroundMusic()
+{
+	CCLOG("pause music");	
+	flag_music = false;
+	SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();	
+}
+
+void Inicio::StopBackgroundMusic()
+{
+	CCLOG("stop music");	
+	flag_music = false;
+	SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();	
+}
+
+void Inicio::LoadSounds()
+{
+	CCLOG("preload sounds");
+	SimpleAudioEngine::sharedEngine()->preloadEffect("button-settings.wav"); 	
+}
+void Inicio::PlaySoundTouch()
+{
+	if (flag_sounds == true)
+	SimpleAudioEngine::sharedEngine()->playEffect("button-settings.wav");								
+}
+void Inicio::PauseSounds()
+{
+	flag_sounds = false;
+}
+void Inicio::ResumeSounds()
+{
+	flag_sounds = true;	
 }

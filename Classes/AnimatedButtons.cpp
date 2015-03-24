@@ -6,55 +6,110 @@ USING_NS_CC;
 using namespace cocos2d::extension;
 using namespace cocos2d::gui;
 
-void AnimatedButtons::Init(cocos2d::gui::UIButton* btn, cocos2d::gui::UILabelBMFont* lbl, cocos2d::gui::UIImageView* img)
-	{
-		button_down = false;
-		button_time_to_update = 0;
-		changed = false;		
+#define TIME_LIMIT 1
+
+void AnimatedButtons::Init(cocos2d::gui::UIButton* btn, cocos2d::gui::UILabelBMFont* lbl, cocos2d::gui::UIImageView* img, float psx, float psy)
+	{		
+		button_pressed = false;
+		button_pressed_changed = false;
+		button_going_down = false;
+		button_going_up = false;
+		button_time_to_update_down = 0;
+		button_time_to_update_up = 0;
+		changed_down = false;		
+		changed_up = false;
 		UIBtn = btn;
 		if (btn != NULL) basal_scale = CCPoint(btn->getScaleX(), btn->getScaleY());
 		if (btn != NULL) basal_size = btn->getContentSize();
 		label_flag = false;
 		image_flag = false;
-		Set(false, 1);
+		SetButtonGoingUp(true, TIME_LIMIT);
 		if (lbl != NULL) {label_flag = true; UILbl = lbl;}
 		if (img != NULL) {image_flag = true; UIImg = img;}
+		panelScaleX = psx;
+		panelScaleY = psy;
 	}
 
-void AnimatedButtons::Set(bool buttondown, float timettu)
-	{
-   button_down = buttondown;
-   button_time_to_update = timettu;
-   changed = true;
+void AnimatedButtons::SetButtonGoingDown(bool buttondown, float timettu)
+	{	
+   button_going_down = buttondown;
+   button_time_to_update_down = timettu;
+   changed_down = true;	
+	}
+
+void AnimatedButtons::SetButtonGoingUp(bool buttonup, float timettu)
+	{	
+   button_going_up = buttonup;
+   button_time_to_update_up = timettu;
+   changed_up = true;	
 	}
 
 void AnimatedButtons::Update(float dt)
 	{
-		if (changed == true)
-			{
-			button_time_to_update +=dt;
+		if (changed_down == true)
+			{			
+			button_time_to_update_down +=dt;
 
-			if (button_time_to_update > 1)
+			if (button_time_to_update_down > TIME_LIMIT)
 				{
-					if (button_down == true)
+					if (button_going_down == true)
 					{
-					UIBtn->stopAllActions();					
-					UIBtn->runAction(create_button_animation2());					
-					}
-
-					if (button_down == false)
-					{					
 					UIBtn->stopAllActions();
-					CCRepeatForever *acc = CCRepeatForever::create(create_button_animation1());
-					UIBtn->runAction(acc);											
-					}
+					//changed_up = false;
+					//button_time_to_update_up = 0;
+					//button_going_up = false;
+					UIBtn->runAction(create_button_animation2());	
+					button_going_down = false;					
+					}					
 
-				button_time_to_update = 0;
-				changed = false;
+				button_time_to_update_down = 0;
+				changed_down = false;
 			
 				}
 					
 			}
+
+		if (changed_up == true)
+			{
+			
+			button_time_to_update_up +=dt;
+
+			if (button_time_to_update_up > TIME_LIMIT)
+				{
+					if (button_going_up == true && button_going_down == false)
+					{
+					CCScaleTo *resetScale1 = CCScaleTo::create(5/30.f, basal_scale.x);
+					CCEaseInOut *resetScaleBouncing1 = CCEaseInOut::create(resetScale1, 1);	
+					UIBtn->runAction(resetScaleBouncing1);	
+				/*	CCRotateTo *rotate1 = CCRotateTo::create(5/30.f, 0);
+					UIBtn->runAction(rotate1);	*/
+					CCRepeatForever *acc = CCRepeatForever::create(create_button_animation1());
+					UIBtn->runAction(acc);	
+					button_going_up = false;	
+					Pressed(false);
+					}
+
+				button_time_to_update_up = 0;
+				changed_up = false;
+			
+				}
+					
+			}
+
+	static bool viejo;
+	static bool nuevo;
+
+	if (isPressed())
+	if (isPressedOutside(panelScaleX, panelScaleY)) 
+	{	
+	nuevo = true;
+	if (button_going_up == false && button_going_down == false && viejo == false) {SetButtonGoingUp(true, 0.5f); viejo = true;}	
+	}
+	else
+	{
+	nuevo = false;
+	if (button_going_up == false && button_going_down == false && viejo == true) {SetButtonGoingDown(true, 1);	viejo = false;}
+	}
 	}
 
 cocos2d::CCSequence* AnimatedButtons::create_button_animation1()
@@ -76,11 +131,12 @@ cocos2d::CCSequence* AnimatedButtons::create_button_animation2()
 	CCScaleTo *scaleVerDown1 = CCScaleTo::create(5/30.f,basal_scale.x, basal_scale.y - 0.35f);
 	CCEaseBounceInOut *scaleVerBouncing1 = CCEaseBounceInOut::create(scaleVerDown1);
 	CCSequence *shrink1 = CCSequence::create(scaleHorBouncing1,scaleVerBouncing1, NULL);
-	CCScaleTo *swell1 = CCScaleTo::create(15/30.f,basal_scale.x - 0.10f);
+	CCScaleTo *swell1 = CCScaleTo::create(20/30.f,basal_scale.x - 0.35f);
 	CCEaseElasticOut *swellEase1 = CCEaseElasticOut::create(swell1);
-	CCScaleTo *resetScale1 = CCScaleTo::create(1/30.f, basal_scale.x - 0.15f);
-	CCEaseInOut *resetScaleBouncing1 = CCEaseInOut::create(resetScale1, 1);		
-	return CCSequence::create(resetScaleBouncing1, shrink1, swellEase1, NULL);
+	CCRotateTo *rotate1 = CCRotateTo::create(5/30.f, 180);
+	//CCScaleTo *resetScale1 = CCScaleTo::create(5/30.f, basal_scale.x - 0.15f);
+	//CCEaseInOut *resetScaleBouncing1 = CCEaseInOut::create(resetScale1, 1);		
+	return CCSequence::create(swellEase1, NULL);
 }
 
 cocos2d::CCSequence* AnimatedButtons::create_button_animation3()
@@ -141,3 +197,62 @@ void AnimatedButtons::Hide()
 		UIImg->setVisible(false);
 		}
 }
+
+void AnimatedButtons::SetTouchable(bool value)
+{	
+	UIBtn->setTouchEnabled(value);
+	//UIBtn->setColor(ccc3(255,255,255));
+	//if (value == false) UIBtn->setColor(ccc3(128,128,128));
+	
+}
+
+void AnimatedButtons::Pressed(bool value) 
+{
+	button_pressed = value;
+	button_pressed_changed = true;
+	if (isPressedOutside(panelScaleX, panelScaleY) == true)
+		{
+		 button_pressed_outside = true;
+		 button_pressed_inside = false;
+		}
+	else {
+		 button_pressed_outside = true;
+		 button_pressed_inside = false;
+		 }
+
+}
+
+bool AnimatedButtons::isPressed() 
+{
+	return button_pressed;
+}
+
+bool AnimatedButtons::isPressedOutside(float scaleX, float scaleY) 
+{
+	if (UIBtn->getTouchMovePos().x < UIBtn->getWorldPosition().x - UIBtn->getContentSize().width/2*scaleX) return true;
+	if (UIBtn->getTouchMovePos().x > UIBtn->getWorldPosition().x + UIBtn->getContentSize().width/2*scaleX) return true;
+	if (UIBtn->getTouchMovePos().y < UIBtn->getWorldPosition().y - UIBtn->getContentSize().height/2*scaleY) return true; 
+	if (UIBtn->getTouchMovePos().y > UIBtn->getWorldPosition().y + UIBtn->getContentSize().height/2*scaleY) return true;				
+	return false;	
+}
+
+void AnimatedButtons::Began()
+{
+SetButtonGoingDown(true, TIME_LIMIT);	
+Pressed(true);
+}
+void AnimatedButtons::Moved()
+{
+Pressed(true);	
+}
+void AnimatedButtons::Ended()
+{
+SetButtonGoingUp(true, 0.5f);		
+//Pressed(false);
+}
+void AnimatedButtons::Canceled()
+{
+SetButtonGoingUp(true, 1);		
+//Pressed(false);
+}
+

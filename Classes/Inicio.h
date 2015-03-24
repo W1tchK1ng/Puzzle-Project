@@ -28,11 +28,21 @@ public:
 	void ShowLogo(bool value);	
 	void ShowMainMenu(bool value);
 	void ShowSettings(bool value1, bool value2);	
-	bool IsTouchOutsideButton(cocos2d::gui::UIButton* btn, cocos2d::gui::UIPanel* panelBotonera);
+	bool IsTouchOutsideButton(AnimatedButtons*, cocos2d::gui::UIPanel* panelBotonera);
 	void FadeOutSettings();
 	void FadeOutMainMenu();	
+	void SetTouchEnabledSettings(bool value);
+	void SetTouchEnabledMainMenu(bool value);
 	bool flag_music;
-	bool flag_sounds;
+	bool flag_sounds;	
+	void PlayBackgroundMusic();
+	void PauseBackgroundMusic();
+	void StopBackgroundMusic();
+	void LoadBackgroundMusic();
+	void LoadSounds();
+	void PauseSounds();
+	void ResumeSounds();
+	void PlaySoundTouch();
 	AnimatedButtons *Btn[10];
     // implement the "static node()" method manually
     CREATE_FUNC(Inicio);
